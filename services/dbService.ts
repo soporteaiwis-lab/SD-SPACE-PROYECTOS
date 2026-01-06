@@ -34,6 +34,10 @@ class DBService {
     let localTools: Tool[] = savedTools ? JSON.parse(savedTools) : [];
     let localUsedIds: UsedID[] = savedIds ? JSON.parse(savedIds) : [];
 
+    // --- CRITICAL CLEANUP: PURGE LEGACY ADA USERS ---
+    // This explicitly removes any user from LocalStorage that matches the old domain
+    localUsers = localUsers.filter(u => !u.email.toLowerCase().includes('@ada.cl'));
+
     // --- MIGRATION LOGIC FOR OLD PROJECTS (Convert driveLink/githubLink to repositories) ---
     localProjects = localProjects.map((p: any) => {
         if (!p.repositories) {
@@ -48,11 +52,14 @@ class DBService {
     // 2. Users Merge
     const mergedUsersMap = new Map<string, User>();
     localUsers.forEach(u => mergedUsersMap.set(u.id, u));
+    
+    // Enforce INITIAL_USERS (SimpleData) over existing ones if IDs match, to update roles/names
     INITIAL_USERS.forEach(initUser => {
         const existingUser = mergedUsersMap.get(initUser.id);
         if (existingUser) {
+            // Merge projects but keep the new Init data for everything else
             const combinedProjects = Array.from(new Set([...initUser.projects, ...existingUser.projects]));
-            mergedUsersMap.set(initUser.id, { ...existingUser, projects: combinedProjects, role: initUser.role, name: initUser.name });
+            mergedUsersMap.set(initUser.id, { ...existingUser, projects: combinedProjects, role: initUser.role, name: initUser.name, email: initUser.email, avatar: initUser.avatar });
         } else {
             mergedUsersMap.set(initUser.id, initUser);
         }
