@@ -32,8 +32,8 @@ export const MobileNav = ({ currentRoute, onNavigate, currentUser }: { currentRo
                     onClick={() => onNavigate(item.id)}
                     className="flex flex-col items-center justify-center -mt-8 relative group shrink-0 mx-2"
                  >
-                     <div className="absolute inset-0 bg-ada-accent/20 rounded-full blur-lg animate-pulse"></div>
-                     <div className="w-14 h-14 rounded-full bg-ada-900 text-ada-accent flex items-center justify-center shadow-lg border-4 border-slate-100 relative z-10 transition-transform active:scale-95">
+                     <div className="absolute inset-0 bg-SIMPLEDATA-accent/20 rounded-full blur-lg animate-pulse"></div>
+                     <div className="w-14 h-14 rounded-full bg-SIMPLEDATA-900 text-SIMPLEDATA-accent flex items-center justify-center shadow-lg border-4 border-slate-100 relative z-10 transition-transform active:scale-95">
                          <Icon name={item.icon} className="text-xl" />
                      </div>
                      <span className="text-[10px] font-bold text-slate-600 mt-1">{item.label}</span>
@@ -44,7 +44,7 @@ export const MobileNav = ({ currentRoute, onNavigate, currentUser }: { currentRo
           <button
             key={item.id}
             onClick={() => onNavigate(item.id)}
-            className={`flex flex-col items-center justify-center w-14 py-1 rounded-lg transition-all active:scale-95 shrink-0 ${isActive ? 'text-ada-600' : 'text-slate-400 hover:text-slate-600'}`}
+            className={`flex flex-col items-center justify-center w-14 py-1 rounded-lg transition-all active:scale-95 shrink-0 ${isActive ? 'text-SIMPLEDATA-600' : 'text-slate-400 hover:text-slate-600'}`}
           >
             <Icon name={item.icon} className={`text-xl mb-1 transition-transform ${isActive ? '-translate-y-1' : ''}`} />
             <span className="text-[10px] font-medium">{item.label}</span>

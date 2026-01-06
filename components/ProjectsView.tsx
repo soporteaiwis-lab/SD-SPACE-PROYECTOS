@@ -120,7 +120,7 @@ export const ProjectsView = ({
         deadline: new Date(Date.now() + 30*24*60*60*1000).toISOString().split('T')[0],
         teamIds: [],
         manualId: nextId,
-        repoGithub: 'https://github.com/soporteaiwis-lab/ADA-APP-CORPORATE-PROYECTOS-OFICIAL-',
+        repoGithub: 'https://github.com/soporteaiwis-lab/SIMPLEDATA-APP-CORPORATE-PROYECTOS-OFICIAL-',
         repoDrive: '',
         technologies: []
       });
@@ -142,7 +142,7 @@ export const ProjectsView = ({
 
     const project: Project = {
       id: newProject.manualId, 
-      name: newProject.name,
+      name: newProject.name, 
       client: newProject.client,
       encargadoCliente: newProject.encargadoCliente || 'Sin Asignar',
       status: newProject.status as ProjectStatus,
@@ -329,8 +329,8 @@ export const ProjectsView = ({
 
        <div className="flex flex-col gap-4">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-            <h2 className="text-2xl font-bold text-ada-900">Gestión de Proyectos (SDLC)</h2>
-            <button onClick={openCreateModal} className="w-full lg:w-auto bg-ada-600 hover:bg-ada-700 text-white px-4 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors shadow-md flex items-center justify-center">
+            <h2 className="text-2xl font-bold text-SIMPLEDATA-900">Gestión de Proyectos (SDLC)</h2>
+            <button onClick={openCreateModal} className="w-full lg:w-auto bg-SIMPLEDATA-600 hover:bg-SIMPLEDATA-700 text-white px-4 py-3 lg:py-2 rounded-lg text-sm font-medium transition-colors shadow-md flex items-center justify-center">
             <Icon name="fa-plus" className="mr-2" /> Nuevo Proyecto
             </button>
         </div>
@@ -589,8 +589,8 @@ export const ProjectsView = ({
                                  const isSelected = newProject.teamIds?.includes(u.id);
                                  
                                  return (
-                                     <label key={u.id} className={`flex items-start gap-2 p-2 rounded cursor-pointer border transition-all ${isSelected ? 'bg-ada-100 border-ada-300 ring-1 ring-ada-500' : 'bg-white border-slate-200 hover:border-ada-300'}`}>
-                                         <input type="checkbox" checked={isSelected} onChange={() => toggleNewProjectTeamMember(u.id)} className="mt-1 rounded text-ada-600 focus:ring-ada-500" />
+                                     <label key={u.id} className={`flex items-start gap-2 p-2 rounded cursor-pointer border transition-all ${isSelected ? 'bg-SIMPLEDATA-100 border-SIMPLEDATA-300 ring-1 ring-SIMPLEDATA-500' : 'bg-white border-slate-200 hover:border-SIMPLEDATA-300'}`}>
+                                         <input type="checkbox" checked={isSelected} onChange={() => toggleNewProjectTeamMember(u.id)} className="mt-1 rounded text-SIMPLEDATA-600 focus:ring-SIMPLEDATA-500" />
                                          <div className="flex-1 min-w-0">
                                              <div className="flex justify-between items-center">
                                                  <span className="text-sm font-bold text-slate-800 truncate">{u.name}</span>
@@ -613,7 +613,7 @@ export const ProjectsView = ({
              {/* FOOTER */}
              <div className="p-4 border-t bg-slate-50 md:rounded-b-2xl shrink-0 flex gap-2">
                 <button onClick={() => {setShowCreateModal(false); setShowEditModal(false);}} className="flex-1 py-3 bg-slate-200 text-slate-600 font-bold rounded-lg hover:bg-slate-300 transition-colors">Cancelar</button>
-                <button onClick={showEditModal ? handleUpdate : handleCreate} className="flex-1 py-3 bg-ada-600 text-white font-bold rounded-lg shadow-lg hover:bg-ada-700 transition-colors">Guardar</button>
+                <button onClick={showEditModal ? handleUpdate : handleCreate} className="flex-1 py-3 bg-SIMPLEDATA-600 text-white font-bold rounded-lg shadow-lg hover:bg-SIMPLEDATA-700 transition-colors">Guardar</button>
              </div>
           </div>
         </div>
@@ -641,7 +641,7 @@ export const ProjectsView = ({
                             disabled={!newLogText.trim()}
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded text-sm disabled:opacity-50 transition-colors"
                         >
-                            + Agregar Entrada
+                            + Agregar Entradas
                         </button>
                     </div>
 
@@ -677,8 +677,8 @@ export const ProjectsView = ({
                      {users.map(u => {
                          const isSelected = selectedProject.teamIds.includes(u.id);
                          return (
-                             <div key={u.id} onClick={() => handleToggleTeamMember(u.id)} className={`p-3 rounded-xl border flex items-center gap-3 cursor-pointer transition-all ${isSelected ? 'bg-ada-50 border-ada-200' : 'bg-white border-slate-100'}`}>
-                                 <div className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected ? 'bg-ada-600 border-ada-600' : 'border-slate-300'}`}>
+                             <div key={u.id} onClick={() => handleToggleTeamMember(u.id)} className={`p-3 rounded-xl border flex items-center gap-3 cursor-pointer transition-all ${isSelected ? 'bg-SIMPLEDATA-50 border-SIMPLEDATA-200' : 'bg-white border-slate-100'}`}>
+                                 <div className={`w-5 h-5 rounded border flex items-center justify-center ${isSelected ? 'bg-SIMPLEDATA-600 border-SIMPLEDATA-600' : 'border-slate-300'}`}>
                                      {isSelected && <Icon name="fa-check" className="text-white text-xs"/>}
                                  </div>
                                  <img src={u.avatar} className="w-8 h-8 rounded-full" />

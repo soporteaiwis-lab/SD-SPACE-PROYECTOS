@@ -43,7 +43,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
 
   // --- GITHUB TOKEN LOGIC (RESTORED TO CLASSIC) ---
   const getStoredGithubToken = () => {
-      return localStorage.getItem('ada_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN || '';
+      return localStorage.getItem('SIMPLEDATA_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN || '';
   };
 
   const [githubToken, setGithubToken] = useState(getStoredGithubToken());
@@ -348,7 +348,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
 
       if (activeTab === 'github') {
           setSelectedRepoId(repoId);
-          const storedToken = localStorage.getItem('ada_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN;
+          const storedToken = localStorage.getItem('SIMPLEDATA_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN;
           if (!storedToken || storedToken.length < 5) {
               setShowTokenInput(true);
               return;
@@ -433,7 +433,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
   // --- GITHUB UPLOAD ---
   const uploadToGitHubReal = async (file: File, repo: Repository) => {
       try {
-          const effectiveToken = localStorage.getItem('ada_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN;
+          const effectiveToken = localStorage.getItem('SIMPLEDATA_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN;
           if (!effectiveToken) throw new Error("Token de GitHub no encontrado en configuración.");
 
           setUploadStatusMsg('Verificando repositorio...');
@@ -484,7 +484,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                   'Accept': 'application/vnd.github.v3+json'
               },
               body: JSON.stringify({
-                  message: `Upload ${file.name} via ADA Portal (${new Date().toISOString()})`,
+                  message: `Upload ${file.name} via SIMPLEDATA Portal (${new Date().toISOString()})`,
                   content: base64Content
               })
           });
@@ -762,7 +762,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                                 value={githubToken}
                                 onChange={e => {
                                     setGithubToken(e.target.value);
-                                    localStorage.setItem('ada_env_GITHUB_TOKEN', e.target.value);
+                                    localStorage.setItem('SIMPLEDATA_env_GITHUB_TOKEN', e.target.value);
                                 }}
                             />
                             <div className="flex gap-2">
@@ -894,7 +894,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                                         <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-2xl shrink-0"><Icon name="fa-magic" /></div>
                                         <div>
                                             <h4 className="font-bold text-green-900 text-lg">Generador de Estructura Automática</h4>
-                                            <p className="text-sm text-green-700/80 mt-1">Crea automáticamente las 8 carpetas estándar del proyecto ADA.</p>
+                                            <p className="text-sm text-green-700/80 mt-1">Crea automáticamente las 8 carpetas estándar del proyecto SIMPLEDATA.</p>
                                         </div>
                                     </div>
                                     

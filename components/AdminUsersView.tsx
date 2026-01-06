@@ -258,7 +258,7 @@ export const AdminUsersView = ({
 
                 <div className="mt-6 flex justify-end gap-2">
                     <button onClick={() => {setEditingUser(null); setIsAdding(false);}} className="px-4 py-2 text-slate-500 hover:bg-slate-50 rounded">Cancelar</button>
-                    <button onClick={handleSave} className="px-6 py-2 bg-ada-600 text-white font-bold rounded hover:bg-ada-700">Guardar Cambios</button>
+                    <button onClick={handleSave} className="px-6 py-2 bg-SIMPLEDATA-600 text-white font-bold rounded hover:bg-SIMPLEDATA-700">Guardar Cambios</button>
                 </div>
             </div>
         </div>

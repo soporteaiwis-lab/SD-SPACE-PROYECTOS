@@ -26,9 +26,9 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
   
   // UPDATED: Pre-fill with APP_CONFIG values (which now include hardcoded keys)
   const [manualKeys, setManualKeys] = useState({
-      apiKey: localStorage.getItem('ada_env_API_KEY') || APP_CONFIG.GEMINI_API_KEY || '',
-      githubToken: localStorage.getItem('ada_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN || '',
-      googleClientId: localStorage.getItem('ada_env_GOOGLE_CLIENT_ID') || APP_CONFIG.GOOGLE_CLIENT_ID || ''
+      apiKey: localStorage.getItem('SIMPLEDATA_env_API_KEY') || APP_CONFIG.GEMINI_API_KEY || '',
+      githubToken: localStorage.getItem('SIMPLEDATA_env_GITHUB_TOKEN') || APP_CONFIG.GITHUB_TOKEN || '',
+      googleClientId: localStorage.getItem('SIMPLEDATA_env_GOOGLE_CLIENT_ID') || APP_CONFIG.GOOGLE_CLIENT_ID || ''
   });
 
   // ESC Listener
@@ -44,28 +44,28 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
       try {
           // 1. Guardar Gemini API Key
           if (manualKeys.apiKey && manualKeys.apiKey.trim() !== '') {
-              localStorage.setItem('ada_env_API_KEY', manualKeys.apiKey.trim());
+              localStorage.setItem('SIMPLEDATA_env_API_KEY', manualKeys.apiKey.trim());
           } else {
-              localStorage.removeItem('ada_env_API_KEY');
+              localStorage.removeItem('SIMPLEDATA_env_API_KEY');
           }
 
           // 2. Guardar GitHub Token (En ambas llaves para asegurar compatibilidad total)
           if (manualKeys.githubToken && manualKeys.githubToken.trim() !== '') {
               const token = manualKeys.githubToken.trim();
-              localStorage.setItem('ada_env_GITHUB_TOKEN', token); // Para APP_CONFIG
+              localStorage.setItem('SIMPLEDATA_env_GITHUB_TOKEN', token); // Para APP_CONFIG
           } else {
-              localStorage.removeItem('ada_env_GITHUB_TOKEN');
+              localStorage.removeItem('SIMPLEDATA_env_GITHUB_TOKEN');
           }
 
           // 3. Guardar Google Client ID (Para Drive OAuth)
           if (manualKeys.googleClientId && manualKeys.googleClientId.trim() !== '') {
-            localStorage.setItem('ada_env_GOOGLE_CLIENT_ID', manualKeys.googleClientId.trim());
+            localStorage.setItem('SIMPLEDATA_env_GOOGLE_CLIENT_ID', manualKeys.googleClientId.trim());
           } else {
-            localStorage.removeItem('ada_env_GOOGLE_CLIENT_ID');
+            localStorage.removeItem('SIMPLEDATA_env_GOOGLE_CLIENT_ID');
           }
           
           // 4. Feedback y Recarga
-          alert("✅ Configuración guardada exitosamente.\n\nEl sistema se reiniciará ahora para aplicar los cambios.");
+          alert("✅ Configuración guardSIMPLEDATA exitosamente.\n\nEl sistema se reiniciará ahora para aplicar los cambios.");
           window.location.reload();
       } catch (e) {
           console.error(e);
@@ -80,8 +80,8 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
     <div className="space-y-6 animate-fade-in print:hidden pb-20 lg:pb-0">
       <header className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 gap-4">
         <div>
-          <h2 className="text-2xl lg:text-3xl font-bold text-ada-900">Hola, {currentUser.name.split(' ')[0]}</h2>
-          <p className="text-slate-500 mt-1 text-sm lg:text-base">Bienvenido al ecosistema corporativo ADA.</p>
+          <h2 className="text-2xl lg:text-3xl font-bold text-SIMPLEDATA-900">Hola, {currentUser.name.split(' ')[0]}</h2>
+          <p className="text-slate-500 mt-1 text-sm lg:text-base">Bienvenido al ecosistema corporativo SIMPLEDATA.</p>
         </div>
         
         {/* Header Actions - Responsive Fix */}
@@ -112,7 +112,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                  {/* Config Button - ALWAYS VISIBLE */}
                  <button 
                     onClick={() => setShowConfig(true)} 
-                    className="w-10 h-10 flex items-center justify-center bg-white text-slate-400 hover:text-ada-600 rounded-xl shadow-sm border border-slate-200 transition-colors" 
+                    className="w-10 h-10 flex items-center justify-center bg-white text-slate-400 hover:text-SIMPLEDATA-600 rounded-xl shadow-sm border border-slate-200 transition-colors" 
                     title="Configuración Manual de Llaves"
                  >
                     <Icon name="fa-cog" />
@@ -156,7 +156,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
               <Icon name="fa-briefcase" className="text-xl" />
             </div>
           </div>
-          <h3 className="text-3xl font-bold text-ada-900 relative z-10">{myActiveProjects.length}</h3>
+          <h3 className="text-3xl font-bold text-SIMPLEDATA-900 relative z-10">{myActiveProjects.length}</h3>
           <p className="text-slate-500 text-sm relative z-10 font-medium">Mis Proyectos Activos</p>
         </div>
         
@@ -166,20 +166,20 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
               <Icon name="fa-building" className="text-xl" />
             </div>
           </div>
-          <h3 className="text-3xl font-bold text-ada-900">{totalSystemProjects.length}</h3>
+          <h3 className="text-3xl font-bold text-SIMPLEDATA-900">{totalSystemProjects.length}</h3>
           <p className="text-slate-500 text-sm font-medium">Total Empresa (En Curso)</p>
         </div>
 
-        <div className="bg-gradient-to-br from-ada-600 to-ada-500 p-6 rounded-2xl shadow-lg text-white">
+        <div className="bg-gradient-to-br from-SIMPLEDATA-600 to-SIMPLEDATA-500 p-6 rounded-2xl shadow-lg text-white">
           <div className="flex justify-between items-start mb-4">
             <div className="p-3 bg-white/20 rounded-xl">
               <Icon name="fa-wand-magic-sparkles" className="text-xl" />
             </div>
              <div className="flex gap-1">
-                 {isGeminiReady && <span title="AI Conectada" className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.8)]"></span>}
+                 {isGeminiReady && <span title="AI ConectSIMPLEDATA" className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_5px_rgba(74,222,128,0.8)]"></span>}
              </div>
           </div>
-          <h3 className="text-lg font-bold mb-1">ADA AI</h3>
+          <h3 className="text-lg font-bold mb-1">SIMPLEDATA AI</h3>
           <p className="text-white/80 text-sm">{isGeminiReady ? 'Conexión segura establecida.' : 'Modo Offline (Sin API Key)'}</p>
         </div>
       </div>
@@ -207,7 +207,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                             <button 
                                 onClick={() => {
                                   navigator.clipboard.writeText(currentOrigin);
-                                  alert("URL copiada. Pégala en Google Cloud Console.");
+                                  alert("URL copiSIMPLEDATA. Pégala en Google Cloud Console.");
                                 }}
                                 className="bg-red-600 hover:bg-red-700 px-3 py-2 rounded text-white font-bold"
                                 title="Copiar URL"
@@ -221,7 +221,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Gemini API Key (Google AI)</label>
                           <input 
                               type="password" 
-                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-ada-500" 
+                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-SIMPLEDATA-500" 
                               placeholder="AIzb..." 
                               value={manualKeys.apiKey}
                               onChange={e => setManualKeys({...manualKeys, apiKey: e.target.value})}
@@ -232,7 +232,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                           <label className="block text-xs font-bold text-slate-500 uppercase mb-1">GitHub Personal Access Token (PAT)</label>
                           <input 
                               type="password" 
-                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-ada-500" 
+                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-SIMPLEDATA-500" 
                               placeholder="ghp_..." 
                               value={manualKeys.githubToken}
                               onChange={e => setManualKeys({...manualKeys, githubToken: e.target.value})}
@@ -245,13 +245,13 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                         </label>
                         <p className="text-[10px] text-slate-400 mb-2">
                            Requerido para subir archivos directo a Drive. 
-                           <a href="https://console.cloud.google.com/apis/credentials" target="_blank" className="text-ada-600 underline ml-1 font-bold">
+                           <a href="https://console.cloud.google.com/apis/credentials" target="_blank" className="text-SIMPLEDATA-600 underline ml-1 font-bold">
                                Creado en Google Cloud Console
                            </a>.
                         </p>
                         <input 
                               type="text" 
-                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-ada-500" 
+                              className="w-full border p-3 rounded-lg font-mono text-sm bg-slate-50 focus:bg-white transition-colors outline-none focus:ring-2 focus:ring-SIMPLEDATA-500" 
                               placeholder="xxxxxxxx-xxxxxxxx.apps.googleusercontent.com" 
                               value={manualKeys.googleClientId}
                               onChange={e => setManualKeys({...manualKeys, googleClientId: e.target.value})}
@@ -260,7 +260,7 @@ export const Dashboard = ({ currentUser, projects }: { currentUser: User, projec
                   </div>
                   <div className="p-4 border-t shrink-0 bg-slate-50 flex justify-end gap-2">
                       <button onClick={() => setShowConfig(false)} className="px-4 py-2 text-slate-500 hover:bg-slate-100 rounded-lg">Cancelar</button>
-                      <button onClick={handleSaveKeys} className="px-6 py-2 bg-ada-600 text-white font-bold rounded-lg hover:bg-ada-700 shadow-lg">Guardar y Recargar</button>
+                      <button onClick={handleSaveKeys} className="px-6 py-2 bg-SIMPLEDATA-600 text-white font-bold rounded-lg hover:bg-SIMPLEDATA-700 shadow-lg">Guardar y Recargar</button>
                   </div>
               </div>
           </div>

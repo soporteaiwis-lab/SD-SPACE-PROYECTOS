@@ -146,7 +146,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                         onClick={(e) => handleToolClick(e, tool)}
                         className="flex flex-col items-center gap-3 w-full p-2 cursor-pointer"
                     >
-                        <div className={`w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/10 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-ada-400 transition-all duration-300 shadow-xl relative overflow-hidden`}>
+                        <div className={`w-20 h-20 bg-white/5 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/10 group-hover:scale-110 group-hover:bg-white/10 group-hover:border-SIMPLEDATA-400 transition-all duration-300 shadow-xl relative overflow-hidden`}>
                             <Icon name={tool.icon} className={`text-3xl ${tool.color}`} />
                             
                             {/* Type Indicator */}
@@ -156,7 +156,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                                 </div>
                             )}
                         </div>
-                        <span className="text-white text-sm font-medium group-hover:text-ada-accent transition-colors text-center truncate w-full px-1">{tool.name}</span>
+                        <span className="text-white text-sm font-medium group-hover:text-SIMPLEDATA-accent transition-colors text-center truncate w-full px-1">{tool.name}</span>
                     </a>
                     
                     {/* Admin Actions - ALWAYS VISIBLE */}
@@ -175,8 +175,8 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                     onClick={openAdd}
                     className="flex flex-col items-center gap-3 group w-full p-2"
                 >
-                    <div className="w-20 h-20 bg-ada-600/10 rounded-2xl flex items-center justify-center border-2 border-dashed border-ada-500/30 group-hover:bg-ada-600 group-hover:border-ada-500 group-hover:scale-105 transition-all duration-300">
-                        <Icon name="fa-plus" className="text-2xl text-ada-400 group-hover:text-white" />
+                    <div className="w-20 h-20 bg-SIMPLEDATA-600/10 rounded-2xl flex items-center justify-center border-2 border-dashed border-SIMPLEDATA-500/30 group-hover:bg-SIMPLEDATA-600 group-hover:border-SIMPLEDATA-500 group-hover:scale-105 transition-all duration-300">
+                        <Icon name="fa-plus" className="text-2xl text-SIMPLEDATA-400 group-hover:text-white" />
                     </div>
                     <span className="text-white/50 text-sm font-medium group-hover:text-white transition-colors">Nuevo</span>
                 </button>
@@ -207,7 +207,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
 
                 <button 
                     onClick={handleCopyPath}
-                    className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${copySuccess ? 'bg-green-600 text-white' : 'bg-ada-900 text-white hover:bg-ada-800'}`}
+                    className={`w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all ${copySuccess ? 'bg-green-600 text-white' : 'bg-SIMPLEDATA-900 text-white hover:bg-SIMPLEDATA-800'}`}
                 >
                     {copySuccess ? <><Icon name="fa-check" /> ¡Copiado!</> : <><Icon name="fa-copy" /> 1. Copiar Ruta</>}
                 </button>
@@ -240,7 +240,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                         <div>
                             <label className="text-xs font-bold text-slate-400 uppercase">Nombre</label>
                             <input 
-                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-ada-500 outline-none" 
+                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-SIMPLEDATA-500 outline-none" 
                                 placeholder="Ej. Calculadora" 
                                 value={formData.name}
                                 onChange={e => setFormData({...formData, name: e.target.value})}
@@ -249,7 +249,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                         <div>
                             <label className="text-xs font-bold text-slate-400 uppercase">Ruta, URL o Protocolo</label>
                             <input 
-                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-ada-500 outline-none font-mono text-sm" 
+                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-SIMPLEDATA-500 outline-none font-mono text-sm" 
                                 placeholder="https://... o C:\... o calculator:" 
                                 value={formData.url}
                                 onChange={e => setFormData({...formData, url: e.target.value})}
@@ -258,7 +258,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                         
                         {/* Protocol Suggestions */}
                         <div className="bg-slate-900/50 p-3 rounded-lg border border-slate-700">
-                            <p className="text-xs text-ada-400 font-bold mb-2">💡 Tips para abrir directo (Sin Copiar/Pegar):</p>
+                            <p className="text-xs text-SIMPLEDATA-400 font-bold mb-2">💡 Tips para abrir directo (Sin Copiar/Pegar):</p>
                             <div className="flex flex-wrap gap-2">
                                 {URI_SCHEMES.map(s => (
                                     <button 
@@ -275,7 +275,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
                         <div>
                             <label className="text-xs font-bold text-slate-400 uppercase">Icono (FontAwesome)</label>
                             <input 
-                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-ada-500 outline-none" 
+                                className="w-full bg-slate-900 border border-slate-600 text-white p-3 rounded-lg mt-1 focus:border-SIMPLEDATA-500 outline-none" 
                                 placeholder="fa-cube" 
                                 value={formData.icon}
                                 onChange={e => setFormData({...formData, icon: e.target.value})}
@@ -285,7 +285,7 @@ export const ToolsModal = ({ onClose, tools, onAddTool, onUpdateTool, onDeleteTo
 
                     <div className="flex gap-3 mt-8 shrink-0">
                         <button onClick={() => {setIsAdding(false); setEditingTool(null);}} className="flex-1 py-3 text-slate-400 hover:bg-slate-700 rounded-lg">Cancelar</button>
-                        <button onClick={handleSaveTool} className="flex-1 py-3 bg-ada-600 hover:bg-ada-500 text-white rounded-lg font-bold">Guardar</button>
+                        <button onClick={handleSaveTool} className="flex-1 py-3 bg-SIMPLEDATA-600 hover:bg-SIMPLEDATA-500 text-white rounded-lg font-bold">Guardar</button>
                     </div>
                 </div>
             </div>

@@ -1,12 +1,12 @@
 import { User, Project, Gem, ProjectLog, Tool, Repository, UsedID } from '../types';
 import { INITIAL_USERS, INITIAL_PROJECTS, INITIAL_GEMS, INITIAL_TOOLS } from '../constants';
 
-// Local Storage Keys - REBRANDED to ADA
-const USERS_KEY = 'ada_users_v1'; 
-const PROJECTS_KEY = 'ada_projects_v1';
-const GEMS_KEY = 'ada_gems_v1';
-const TOOLS_KEY = 'ada_tools_v1';
-const USED_IDS_KEY = 'ada_used_ids_v1'; // NEW TABLE for Correlatives
+// Local Storage Keys - REBRANDED to SIMPLEDATA
+const USERS_KEY = 'SIMPLEDATA_users_v1'; 
+const PROJECTS_KEY = 'SIMPLEDATA_projects_v1';
+const GEMS_KEY = 'SIMPLEDATA_gems_v1';
+const TOOLS_KEY = 'SIMPLEDATA_tools_v1';
+const USED_IDS_KEY = 'SIMPLEDATA_used_ids_v1'; // NEW TABLE for Correlatives
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 

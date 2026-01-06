@@ -23,10 +23,10 @@ const getEnvVar = (key: string): string => {
     // Ignore errors
   }
 
-  // 3. LOCAL STORAGE (Prioritize ADA keys, fallback to SIMPLE keys for migration)
+  // 3. LOCAL STORAGE (Prioritize SIMPLEDATA keys, fallback to SIMPLE keys for migration)
   if (typeof window !== 'undefined') {
-      const adaKey = localStorage.getItem(`ada_env_${key}`);
-      if (adaKey) return adaKey;
+      const SIMPLEDATAKey = localStorage.getItem(`SIMPLEDATA_env_${key}`);
+      if (SIMPLEDATAKey) return SIMPLEDATAKey;
 
       // Fallback for previous SimpleData users
       const simpleKey = localStorage.getItem(`simple_env_${key}`);
@@ -51,13 +51,13 @@ export const APP_CONFIG = {
   GOOGLE_CLIENT_ID: getEnvVar('GOOGLE_CLIENT_ID') || HARDCODED_KEYS.DRIVE_CLIENT_ID
 };
 
-// --- NUEVO EQUIPO ADA ---
+// --- NUEVO EQUIPO SIMPLEDATA ---
 export const INITIAL_USERS: User[] = [
   {
     id: 'u_julio',
     name: 'Julio Sepulveda',
     role: UserRole.CEO,
-    email: 'jspulveda@ada.cl',
+    email: 'jspulveda@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Julio+Sepulveda&background=0D8ABC&color=fff',
     skills: [
@@ -85,7 +85,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_andrea',
     name: 'Andrea Martínez',
     role: UserRole.ANALYST,
-    email: 'amartinez@ada.cl',
+    email: 'amartinez@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Andrea+Martinez&background=random',
     skills: [
@@ -98,7 +98,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_crizla',
     name: 'Crizla Urrutia',
     role: UserRole.DEVELOPER,
-    email: 'currutia@ada.cl',
+    email: 'currutia@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Crizla+Urrutia&background=random',
     skills: [
@@ -111,7 +111,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_doris',
     name: 'Doris Macaya',
     role: UserRole.ANALYST,
-    email: 'dmacaya@ada.cl',
+    email: 'dmacaya@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Doris+Macaya&background=random',
     skills: [
@@ -124,7 +124,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_erika',
     name: 'Erika Chiappa',
     role: UserRole.DEVELOPER,
-    email: 'echiappa@ada.cl',
+    email: 'echiappa@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Erika+Chiappa&background=random',
     skills: [
@@ -137,7 +137,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_raul',
     name: 'Raul Alarcon',
     role: UserRole.DEVELOPER,
-    email: 'ralarcon@ada.cl',
+    email: 'ralarcon@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Raul+Alarcon&background=random',
     skills: [
@@ -150,7 +150,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_pedro',
     name: 'Pedro Concha',
     role: UserRole.PROJECT_MANAGER,
-    email: 'pconcha@ada.cl',
+    email: 'pconcha@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Pedro+Concha&background=random',
     skills: [
@@ -163,7 +163,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_rafael',
     name: 'Rafael Valdés',
     role: UserRole.DEVELOPER,
-    email: 'rvaldes@ada.cl',
+    email: 'rvaldes@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Rafael+Valdes&background=random',
     skills: [
@@ -176,7 +176,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_pablo',
     name: 'Pablo Retamal',
     role: UserRole.DEVELOPER,
-    email: 'pretamal@ada.cl',
+    email: 'pretamal@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Pablo+Retamal&background=random',
     skills: [
@@ -189,7 +189,7 @@ export const INITIAL_USERS: User[] = [
     id: 'u_hugo',
     name: 'Hugo Zapata',
     role: UserRole.ANALYST,
-    email: 'hzapata@ada.cl',
+    email: 'hzapata@SIMPLEDATA.cl',
     password: '1234',
     avatar: 'https://ui-avatars.com/api/?name=Hugo+Zapata&background=random',
     skills: [
@@ -204,7 +204,7 @@ export const INITIAL_PROJECTS: Project[] = [
   {
     id: 'PROYECTO_001',
     name: 'Sistema de Facturación Interna',
-    client: 'Interno ADA',
+    client: 'Interno SIMPLEDATA',
     encargadoCliente: 'Gerencia Admin',
     leadId: 'u_pedro', // Pedro Concha (PM)
     teamIds: ['u_andrea', 'u_doris', 'u_aiwis', 'u_julio'],
@@ -222,7 +222,7 @@ export const INITIAL_PROJECTS: Project[] = [
       { id: 'l2', date: '2025-02-12T14:30:00', text: 'Reunión con contabilidad para definir esquema de base de datos.', author: 'Andrea Martínez' }
     ],
     repositories: [
-        { id: 'r1', type: 'github', alias: 'Repositorio Oficial', url: 'https://github.com/soporteaiwis-lab/ADA-APP-CORPORATE-PROYECTOS-OFICIAL-' }, 
+        { id: 'r1', type: 'github', alias: 'Repositorio Oficial', url: 'https://github.com/soporteaiwis-lab/SIMPLEDATA-APP-CORPORATE-PROYECTOS-OFICIAL-' }, 
         { id: 'r2', type: 'drive', alias: 'Documentación Oficial', url: 'https://drive.google.com/drive/folders/1S3Zavf6xdp9WaM8-gowBJImdkmSD_Niw' }
     ]
   },
@@ -244,7 +244,7 @@ export const INITIAL_PROJECTS: Project[] = [
     technologies: ['React Native', 'Node.js', 'Firebase'],
     logs: [],
     repositories: [
-         { id: 'r1', type: 'github', alias: 'Repositorio Oficial', url: 'https://github.com/soporteaiwis-lab/ADA-APP-CORPORATE-PROYECTOS-OFICIAL-' }
+         { id: 'r1', type: 'github', alias: 'Repositorio Oficial', url: 'https://github.com/soporteaiwis-lab/SIMPLEDATA-APP-CORPORATE-PROYECTOS-OFICIAL-' }
     ]
   },
   {
@@ -264,7 +264,7 @@ export const INITIAL_PROJECTS: Project[] = [
     description: 'Migrar la infraestructura on-premise del cliente a un entorno cloud en AWS, optimizando costos y mejorando la escalabilidad.',
     technologies: ['AWS', 'Docker', 'Linux'],
     logs: [
-       { id: 'l1', date: '2024-12-01T18:00:00', text: 'Instancias EC2 configuradas.', author: 'Erika Chiappa' }
+       { id: 'l1', date: '2024-12-01T18:00:00', text: 'Instancias EC2 configurSIMPLEDATAs.', author: 'Erika Chiappa' }
     ],
     repositories: []
   },
@@ -282,7 +282,7 @@ export const INITIAL_PROJECTS: Project[] = [
     deadline: '2025-08-20',
     progress: 25,
     year: 2025,
-    description: 'Implementación de pipelines de seguridad y auditoría automatizada.',
+    description: 'Implementación de pipelines de seguridad y auditoría automatizSIMPLEDATA.',
     technologies: ['Jenkins', 'SonarQube', 'Kubernetes'],
     logs: [
        { id: 'l1', date: '2025-01-20T10:00:00', text: 'Pipelines base creados.', author: 'Rafael Valdés' }

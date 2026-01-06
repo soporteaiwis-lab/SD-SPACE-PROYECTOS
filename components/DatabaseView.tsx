@@ -7,13 +7,13 @@ const Icon = ({ name, className = "" }: { name: string, className?: string }) =>
 
 // Constants for LocalStorage Keys used in dbService
 const DB_KEYS = {
-    'USERS': 'ada_users_v1',
-    'PROJECTS': 'ada_projects_v1',
-    'USED_IDS': 'ada_used_ids_v1', // NEW EXPOSED TABLE
-    'GEMS': 'ada_gems_v1',
-    'TOOLS': 'ada_tools_v1',
-    'CONFIG_API': 'ada_env_API_KEY',
-    'CONFIG_GH': 'ada_env_GITHUB_TOKEN'
+    'USERS': 'SIMPLEDATA_users_v1',
+    'PROJECTS': 'SIMPLEDATA_projects_v1',
+    'USED_IDS': 'SIMPLEDATA_used_ids_v1', // NEW EXPOSED TABLE
+    'GEMS': 'SIMPLEDATA_gems_v1',
+    'TOOLS': 'SIMPLEDATA_tools_v1',
+    'CONFIG_API': 'SIMPLEDATA_env_API_KEY',
+    'CONFIG_GH': 'SIMPLEDATA_env_GITHUB_TOKEN'
 };
 
 export const DatabaseView = () => {
@@ -41,7 +41,7 @@ export const DatabaseView = () => {
               const asArray = Array.isArray(parsed) ? parsed : [parsed]; 
               setTableData(asArray);
               setRawJson(JSON.stringify(parsed, null, 2));
-              addToConsole(`Cargada tabla: ${key} (${asArray.length} registros)`);
+              addToConsole(`CargSIMPLEDATA tabla: ${key} (${asArray.length} registros)`);
           } catch (e) {
               setTableData([]);
               setRawJson(dataStr); // It might be a plain string (like API Key)
@@ -82,7 +82,7 @@ export const DatabaseView = () => {
       
       try {
           const tableName = activeTable.toLowerCase();
-          let sql = `-- Exportado desde ADA Portal para ${tableName}\n`;
+          let sql = `-- Exportado desde SIMPLEDATA Portal para ${tableName}\n`;
           
           tableData.forEach(row => {
               const columns = Object.keys(row).join(', ');

@@ -50,7 +50,7 @@ export const generateText = async (prompt: string, systemInstruction?: string): 
       } 
       // Scenario D: Chat / General
       else {
-        resolve(`Entendido. He procesado tu solicitud: "${prompt}".\n(Respuesta generada por Sistema Inteligente SimpleData - Modo Offline).`);
+        resolve(`Entendido. He procesado tu solicitud: "${prompt}".\n(Respuesta generSIMPLEDATA por Sistema Inteligente SimpleData - Modo Offline).`);
       }
     }, 500); 
   });

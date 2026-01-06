@@ -110,7 +110,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Informe_${isGlobalMode ? 'GLOBAL' : 'ADA'}_${reportDate}.html`;
+    a.download = `Informe_${isGlobalMode ? 'GLOBAL' : 'SIMPLEDATA'}_${reportDate}.html`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -174,7 +174,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
       {/* Control Panel */}
       <div className="lg:col-span-1 space-y-6 print:hidden order-2 lg:order-1">
          <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-ada-900 mb-4">Configuración</h2>
+            <h2 className="text-xl font-bold text-SIMPLEDATA-900 mb-4">Configuración</h2>
             <div className="space-y-4">
                <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Fecha</label>
@@ -189,7 +189,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
                      {myActiveProjects.length === 0 && <p className="text-xs text-slate-400">No tienes proyectos asignados.</p>}
                      {myActiveProjects.map(p => (
                         <label key={p.id} className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer p-1">
-                           <input type="checkbox" checked={p.report} onChange={() => toggleReportInclude(p)} className="rounded text-ada-600" />
+                           <input type="checkbox" checked={p.report} onChange={() => toggleReportInclude(p)} className="rounded text-SIMPLEDATA-600" />
                            <span className="truncate">{p.name}</span>
                         </label>
                      ))}
@@ -198,7 +198,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
                )}
 
                {isGlobalMode && (
-                   <div className="bg-ada-50 p-3 rounded-lg border border-ada-200 text-ada-700 text-sm">
+                   <div className="bg-SIMPLEDATA-50 p-3 rounded-lg border border-SIMPLEDATA-200 text-SIMPLEDATA-700 text-sm">
                        <strong><Icon name="fa-globe" /> Modo Global Activo:</strong><br/>
                        Viendo {allSystemActiveProjects.length} proyectos de toda la empresa.
                    </div>
@@ -219,7 +219,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
                    </button>
                </div>
 
-               <button onClick={handleGlobalExport} className={`w-full py-3 rounded-lg font-bold text-sm text-white ${isGlobalMode ? 'bg-green-600 hover:bg-green-700' : 'bg-ada-900 hover:bg-ada-800'}`}>
+               <button onClick={handleGlobalExport} className={`w-full py-3 rounded-lg font-bold text-sm text-white ${isGlobalMode ? 'bg-green-600 hover:bg-green-700' : 'bg-SIMPLEDATA-900 hover:bg-SIMPLEDATA-800'}`}>
                   <Icon name="fa-globe" /> {isGlobalMode ? 'Actualizar Vista Global' : 'Exportar GLOBAL (CEO)'}
                </button>
             </div>
@@ -233,7 +233,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
                </button>
             </div>
             <textarea 
-               className="w-full border p-3 rounded-lg h-60 text-base md:text-sm focus:ring-2 focus:ring-ada-500 outline-none leading-relaxed"
+               className="w-full border p-3 rounded-lg h-60 text-base md:text-sm focus:ring-2 focus:ring-SIMPLEDATA-500 outline-none leading-relaxed"
                placeholder="Escribe aquí o usa Autogenerar..."
                value={generalSummary}
                onChange={e => setGeneralSummary(e.target.value)}
@@ -245,8 +245,8 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
       <div className="lg:col-span-2 bg-white rounded-xl shadow-lg border border-slate-200 p-6 md:p-8 min-h-[600px] order-1 lg:order-2">
          <div className="text-center border-b-2 border-slate-800 pb-6 mb-8">
             <h1 className="text-xl md:text-3xl font-bold text-slate-900 uppercase">{isGlobalMode ? 'REPORTE CORPORATIVO GLOBAL' : 'INFORME DE ACTIVIDADES'}</h1>
-            <p className="text-slate-500 mt-2">ADA Ltda - {reportDate}</p>
-            {isGlobalMode && <span className="bg-ada-900 text-white text-xs px-2 py-1 rounded mt-2 inline-block">VISTA DE GERENCIA</span>}
+            <p className="text-slate-500 mt-2">SIMPLEDATA Ltda - {reportDate}</p>
+            {isGlobalMode && <span className="bg-SIMPLEDATA-900 text-white text-xs px-2 py-1 rounded mt-2 inline-block">VISTA DE GERENCIA</span>}
          </div>
 
          <div className="mb-8 bg-slate-50 p-4 rounded-lg">
@@ -257,7 +257,7 @@ export const ReportsView = ({ currentUser, projects, onUpdateProject }: { curren
          <div className="space-y-6">
              {displayProjects.length === 0 && <p className="text-center text-slate-400 py-10">No hay proyectos seleccionados para el informe.</p>}
              {displayProjects.map(project => (
-                 <div key={project.id} className="border-l-4 border-ada-600 pl-4">
+                 <div key={project.id} className="border-l-4 border-SIMPLEDATA-600 pl-4">
                     <div className="flex justify-between items-start">
                         <div>
                             <h4 className="text-lg font-bold text-slate-900">{project.name}</h4>
