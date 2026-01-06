@@ -51,152 +51,113 @@ export const APP_CONFIG = {
   GOOGLE_CLIENT_ID: getEnvVar('GOOGLE_CLIENT_ID') || HARDCODED_KEYS.DRIVE_CLIENT_ID
 };
 
-// --- NUEVO EQUIPO SIMPLEDATA ---
+// --- NUEVO EQUIPO SIMPLEDATA (OFICIAL) ---
 export const INITIAL_USERS: User[] = [
   {
-    id: 'u_julio',
-    name: 'Julio Sepulveda',
+    id: "u_gonzalo",
+    name: "Gonzalo Arias",
     role: UserRole.CEO,
-    email: 'jspulveda@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Julio+Sepulveda&background=0D8ABC&color=fff',
+    email: "gonzalo.arias@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Gonzalo+Arias&background=0D8ABC&color=fff",
     skills: [
-      { name: 'Dirección General', level: 100 },
-      { name: 'Estrategia de Negocios', level: 98 },
-      { name: 'Gestión de Proyectos', level: 95 }
+      { name: "Dirección General", level: 100 },
+      { name: "Estrategia de Negocios", level: 98 },
+      { name: "Gestión de Proyectos", level: 95 }
     ],
-    projects: ['PROYECTO_001', 'PROYECTO_002', 'PROYECTO_003', 'PROYECTO_004']
+    projects: ["PROYECTO_001", "PROYECTO_002", "PROYECTO_003", "PROYECTO_004"]
   },
   {
-    id: 'u_aiwis',
-    name: 'Soporte AIWIS', 
-    role: UserRole.ADMIN, 
-    email: 'soporte.aiwis@gmail.com',
-    password: '', // Password vacía permitida
-    avatar: 'https://ui-avatars.com/api/?name=AIWIS+Root&background=000000&color=fff',
+    id: "u_soporte",
+    name: "Soporte AIWIS",
+    role: UserRole.ADMIN,
+    email: "soporte.aiwis@gmail.com",
+    password: "",
+    avatar: "https://ui-avatars.com/api/?name=AIWIS+Root&background=000000&color=fff",
     skills: [
-      { name: 'System Architecture', level: 100 },
-      { name: 'Database Management', level: 100 },
-      { name: 'Security', level: 100 }
+      { name: "System Architecture", level: 100 },
+      { name: "Database Management", level: 100 },
+      { name: "Security", level: 100 }
     ],
-    projects: ['PROYECTO_001', 'PROYECTO_004']
+    projects: ["PROYECTO_001", "PROYECTO_004"]
   },
   {
-    id: 'u_andrea',
-    name: 'Andrea Martínez',
+    id: "u_gabriel",
+    name: "Gabriel Martinez",
     role: UserRole.ANALYST,
-    email: 'amartinez@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Andrea+Martinez&background=random',
+    email: "gabriel.martinez@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Gabriel+Martinez&background=random",
     skills: [
-      { name: 'Análisis de Datos', level: 90 },
-      { name: 'Gestión Documental', level: 85 }
+      { name: "Análisis de Datos", level: 90 },
+      { name: "Gestión Documental", level: 85 }
     ],
-    projects: ['PROYECTO_001']
+    projects: ["PROYECTO_001"]
   },
   {
-    id: 'u_crizla',
-    name: 'Crizla Urrutia',
+    id: "u_fernando",
+    name: "Fernando Cid",
     role: UserRole.DEVELOPER,
-    email: 'currutia@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Crizla+Urrutia&background=random',
+    email: "fernando.cid@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Fernando+Cid&background=random",
     skills: [
-      { name: 'Desarrollo Frontend', level: 85 },
-      { name: 'UX/UI', level: 80 }
+      { name: "Desarrollo Frontend", level: 85 },
+      { name: "UX/UI", level: 80 }
     ],
-    projects: ['PROYECTO_002']
+    projects: ["PROYECTO_002"]
   },
   {
-    id: 'u_doris',
-    name: 'Doris Macaya',
+    id: "u_francisco",
+    name: "Francisco Valenzuela",
     role: UserRole.ANALYST,
-    email: 'dmacaya@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Doris+Macaya&background=random',
+    email: "francisco.valenzuela@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Francisco+Valenzuela&background=random",
     skills: [
-      { name: 'QA Testing', level: 90 },
-      { name: 'Documentación', level: 95 }
+      { name: "QA Testing", level: 90 },
+      { name: "Documentación", level: 95 }
     ],
-    projects: ['PROYECTO_001', 'PROYECTO_003']
+    projects: ["PROYECTO_001", "PROYECTO_003"]
   },
   {
-    id: 'u_erika',
-    name: 'Erika Chiappa',
+    id: "u_anibal",
+    name: "Anibal Alcazar",
     role: UserRole.DEVELOPER,
-    email: 'echiappa@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Erika+Chiappa&background=random',
+    email: "anibal.alcazar@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Anibal+Alcazar&background=random",
     skills: [
-      { name: 'Backend Java', level: 88 },
-      { name: 'SQL', level: 85 }
+      { name: "Backend Java", level: 88 },
+      { name: "SQL", level: 85 }
     ],
-    projects: ['PROYECTO_003']
+    projects: ["PROYECTO_003"]
   },
   {
-    id: 'u_raul',
-    name: 'Raul Alarcon',
+    id: "u_alejandro",
+    name: "Alejandro Venegas",
     role: UserRole.DEVELOPER,
-    email: 'ralarcon@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Raul+Alarcon&background=random',
+    email: "alejandro.venegas@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Alejandro+Venegas&background=random",
     skills: [
-      { name: 'Full Stack', level: 90 },
-      { name: 'Python', level: 85 }
+      { name: "Full Stack", level: 90 },
+      { name: "Python", level: 85 }
     ],
-    projects: ['PROYECTO_004']
+    projects: ["PROYECTO_004"]
   },
   {
-    id: 'u_pedro',
-    name: 'Pedro Concha',
+    id: "u_juan",
+    name: "Juan Escalona",
     role: UserRole.PROJECT_MANAGER,
-    email: 'pconcha@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Pedro+Concha&background=random',
+    email: "juan.escalona@simpledata.cl",
+    password: "1234",
+    avatar: "https://ui-avatars.com/api/?name=Juan+Escalona&background=random",
     skills: [
-      { name: 'Gestión de Equipos', level: 92 },
-      { name: 'Scrum', level: 90 }
+      { name: "Gestión de Equipos", level: 92 },
+      { name: "Scrum", level: 90 }
     ],
-    projects: ['PROYECTO_001', 'PROYECTO_002']
-  },
-  {
-    id: 'u_rafael',
-    name: 'Rafael Valdés',
-    role: UserRole.DEVELOPER,
-    email: 'rvaldes@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Rafael+Valdes&background=random',
-    skills: [
-      { name: 'DevOps', level: 85 },
-      { name: 'Cloud AWS', level: 80 }
-    ],
-    projects: ['PROYECTO_004']
-  },
-  {
-    id: 'u_pablo',
-    name: 'Pablo Retamal',
-    role: UserRole.DEVELOPER,
-    email: 'pretamal@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Pablo+Retamal&background=random',
-    skills: [
-      { name: 'Mobile Dev', level: 88 },
-      { name: 'React Native', level: 85 }
-    ],
-    projects: ['PROYECTO_002']
-  },
-  {
-    id: 'u_hugo',
-    name: 'Hugo Zapata',
-    role: UserRole.ANALYST,
-    email: 'hzapata@SIMPLEDATA.cl',
-    password: '1234',
-    avatar: 'https://ui-avatars.com/api/?name=Hugo+Zapata&background=random',
-    skills: [
-      { name: 'Business Intelligence', level: 85 },
-      { name: 'Power BI', level: 90 }
-    ],
-    projects: ['PROYECTO_003']
+    projects: ["PROYECTO_001", "PROYECTO_002"]
   }
 ];
 
@@ -206,8 +167,8 @@ export const INITIAL_PROJECTS: Project[] = [
     name: 'Sistema de Facturación Interna',
     client: 'Interno SIMPLEDATA',
     encargadoCliente: 'Gerencia Admin',
-    leadId: 'u_pedro', // Pedro Concha (PM)
-    teamIds: ['u_andrea', 'u_doris', 'u_aiwis', 'u_julio'],
+    leadId: 'u_juan', // Juan Escalona (PM)
+    teamIds: ['u_gabriel', 'u_francisco', 'u_soporte', 'u_gonzalo'],
     status: 'En Curso',
     isOngoing: true,
     report: true,
@@ -219,7 +180,7 @@ export const INITIAL_PROJECTS: Project[] = [
     technologies: ['AWS', 'Python', 'Spark', 'Terraform'],
     logs: [
       { id: 'l1', date: '2025-02-10T10:00:00', text: 'Inicio de la fase de diseño de arquitectura.', author: 'Soporte AIWIS' },
-      { id: 'l2', date: '2025-02-12T14:30:00', text: 'Reunión con contabilidad para definir esquema de base de datos.', author: 'Andrea Martínez' }
+      { id: 'l2', date: '2025-02-12T14:30:00', text: 'Reunión con contabilidad para definir esquema de base de datos.', author: 'Gabriel Martinez' }
     ],
     repositories: [
         { id: 'r1', type: 'github', alias: 'Repositorio Oficial', url: 'https://github.com/soporteaiwis-lab/SIMPLEDATA-APP-CORPORATE-PROYECTOS-OFICIAL-' }, 
@@ -231,8 +192,8 @@ export const INITIAL_PROJECTS: Project[] = [
     name: 'Desarrollo de App Móvil Clientes',
     client: 'Cliente Retail XYZ',
     encargadoCliente: 'Gerente de Innovación',
-    leadId: 'u_pablo', // Pablo Retamal (Mobile)
-    teamIds: ['u_crizla', 'u_pedro', 'u_julio'],
+    leadId: 'u_juan', // Juan Escalona (PM)
+    teamIds: ['u_fernando', 'u_gonzalo'],
     status: 'En Curso',
     isOngoing: true,
     report: true,
@@ -252,8 +213,8 @@ export const INITIAL_PROJECTS: Project[] = [
     name: 'Migración de Servidores Cloud',
     client: 'Empresa Logística ABC',
     encargadoCliente: 'Jefe de IT',
-    leadId: 'u_erika', // Erika (Backend)
-    teamIds: ['u_doris', 'u_hugo', 'u_julio'],
+    leadId: 'u_anibal', // Anibal (Backend)
+    teamIds: ['u_francisco', 'u_gonzalo'],
     status: 'En Curso',
     isOngoing: true,
     report: true,
@@ -264,7 +225,7 @@ export const INITIAL_PROJECTS: Project[] = [
     description: 'Migrar la infraestructura on-premise del cliente a un entorno cloud en AWS, optimizando costos y mejorando la escalabilidad.',
     technologies: ['AWS', 'Docker', 'Linux'],
     logs: [
-       { id: 'l1', date: '2024-12-01T18:00:00', text: 'Instancias EC2 configurSIMPLEDATAs.', author: 'Erika Chiappa' }
+       { id: 'l1', date: '2024-12-01T18:00:00', text: 'Instancias EC2 configuradas.', author: 'Anibal Alcazar' }
     ],
     repositories: []
   },
@@ -273,8 +234,8 @@ export const INITIAL_PROJECTS: Project[] = [
     name: 'Infraestructura DevSecOps',
     client: 'Banco Financiero',
     encargadoCliente: 'CISO',
-    leadId: 'u_rafael', // Rafael (DevOps)
-    teamIds: ['u_raul', 'u_aiwis', 'u_julio'],
+    leadId: 'u_alejandro', // Alejandro (FullStack/Dev)
+    teamIds: ['u_soporte', 'u_gonzalo'],
     status: 'En Curso',
     isOngoing: true,
     report: true,
@@ -282,10 +243,10 @@ export const INITIAL_PROJECTS: Project[] = [
     deadline: '2025-08-20',
     progress: 25,
     year: 2025,
-    description: 'Implementación de pipelines de seguridad y auditoría automatizSIMPLEDATA.',
+    description: 'Implementación de pipelines de seguridad y auditoría automatizada.',
     technologies: ['Jenkins', 'SonarQube', 'Kubernetes'],
     logs: [
-       { id: 'l1', date: '2025-01-20T10:00:00', text: 'Pipelines base creados.', author: 'Rafael Valdés' }
+       { id: 'l1', date: '2025-01-20T10:00:00', text: 'Pipelines base creados.', author: 'Alejandro Venegas' }
     ],
     repositories: []
   }
