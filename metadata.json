@@ -1,0 +1,7 @@
+{
+  "name": "SD SpaceProyectos",
+  "description": "A comprehensive corporate ecosystem for SIMPLEDATA, featuring project management, team insights, weekly reporting, and deep AI integration for productivity.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
