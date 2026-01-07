@@ -31,6 +31,7 @@ interface RepositoryManagerProps {
 export const RepositoryManager = ({ project, initialType, onClose, onUpdateProject, currentUser }: RepositoryManagerProps) => {
   const [activeTab, setActiveTab] = useState<'github' | 'drive'>(initialType);
   const [viewMode, setViewMode] = useState<'list' | 'add'>('list');
+  const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
   
   // --- ESC KEY LISTENER ---
   useEffect(() => {
@@ -108,11 +109,12 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
               return;
           }
           if (!APP_CONFIG.GOOGLE_CLIENT_ID) {
-            reject("Falta GOOGLE_CLIENT_ID en configuración. Usa el botón de engranaje.");
+            reject("Falta GOOGLE_CLIENT_ID en configuración.");
             setShowConfigHint(true);
             return;
           }
           try {
+             // @ts-ignore
              const client = google.accounts.oauth2.initTokenClient({
                   client_id: APP_CONFIG.GOOGLE_CLIENT_ID,
                   scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly',
@@ -125,7 +127,9 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                       }
                   },
                   error_callback: (err: any) => {
-                      reject("Error en popup de Google (Puede ser 400 redirect_uri). Revisa la Configuración.");
+                      // This error object usually contains the 'redirect_uri_mismatch' type
+                      console.error("GIS Error:", err);
+                      reject("Error en popup de Google (400 redirect_uri).");
                       setShowConfigHint(true);
                   }
               });
@@ -183,7 +187,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           setPickerBreadcrumb([{ id: 'root', name: 'Mi Unidad' }]);
       } catch (e) {
           console.error(e);
-          alert("Error de autenticación: " + e);
+          // Don't alert here, rely on hint
           setIsPickerOpen(false);
           setShowConfigHint(true);
       } finally {
@@ -236,7 +240,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           setUploadCurrentFolder({ id: rootId, name: repo.alias || 'Raíz' });
           setUploadBreadcrumb([{ id: rootId, name: repo.alias || 'Raíz' }]);
       } catch (e: any) {
-          alert("Error de Acceso: " + e);
+          // alert("Error de Acceso: " + e); // Removed alert to avoid annoyance
           setIsUploadBrowserOpen(false);
           setShowConfigHint(true);
       } finally {
@@ -268,13 +272,11 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
   };
 
   const triggerFileUploadHere = () => {
-      // Clear direct target, use current folder
       setDirectUploadTargetId(null);
       if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const triggerFileUploadToItem = (folderId: string) => {
-      // Set direct target
       setDirectUploadTargetId(folderId);
       if (fileInputRef.current) fileInputRef.current.click();
   };
@@ -374,8 +376,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           if (activeTab === 'github') {
              await uploadToGitHubReal(file, repo);
           } else {
-             // LOGIC: If directUploadTargetId is set (clicked 'Upload Here' in list), use that.
-             // Else use current viewed folder.
              const targetId = directUploadTargetId || (isUploadBrowserOpen ? uploadCurrentFolder.id : getFolderIdFromUrl(repo.url));
              
              if (targetId) {
@@ -387,7 +387,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           }
       }
       if (fileInputRef.current) fileInputRef.current.value = '';
-      setDirectUploadTargetId(null); // Reset direct target
+      setDirectUploadTargetId(null); 
   };
 
   // --- DRIVE UPLOAD ---
@@ -419,7 +419,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           const data = await response.json();
           setProgress(100);
           
-          // Close browser on success
           setIsUploadBrowserOpen(false);
           
           completeUpload(file, repo, data.webViewLink, isUploadBrowserOpen ? uploadCurrentFolder.name : undefined);
@@ -447,13 +446,9 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           const owner = parts[0];
           const repoName = parts[1];
           
-          // Subfolder support logic
           let path = '';
           const treeIndex = parts.indexOf('tree');
           if (treeIndex !== -1 && parts.length > treeIndex + 2) {
-              // parts[treeIndex] is 'tree'
-              // parts[treeIndex+1] is branch (e.g. 'main')
-              // parts[treeIndex+2...] is the path
               path = parts.slice(treeIndex + 2).join('/');
           }
           
@@ -472,7 +467,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
           setProgress(30);
           setUploadStatusMsg(`Subiendo a ${owner}/${repoName}...`);
           
-          // Construct API URL respecting subfolder
           const filePath = path ? `${path}/${file.name}` : file.name;
           const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/${filePath}`; 
           
@@ -533,7 +527,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
 
   return (
     <div className="fixed inset-0 z-[80] bg-black/80 flex items-center justify-center backdrop-blur-sm p-4 animate-fade-in">
-        {/* CHANGED: max-w-5xl, h-[90vh] */}
         <div className="bg-white rounded-xl w-full max-w-5xl shadow-2xl overflow-hidden flex flex-col h-[90vh]">
             <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileSelect} />
 
@@ -549,13 +542,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button 
-                        onClick={() => { alert("Por favor, ve al Dashboard > Engranaje para configurar el Client ID y el Origen Autorizado."); }} 
-                        className="bg-white/10 hover:bg-white/20 text-xs px-3 py-1.5 rounded flex items-center gap-2"
-                        title="Configuración de Accesos"
-                    >
-                        <Icon name="fa-cog" /> Accesos
-                    </button>
                     <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center"><Icon name="fa-times" /></button>
                 </div>
             </div>
@@ -579,27 +565,43 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-50 relative flex flex-col">
                 
-                {/* --- CONFIG HINT FOR DRIVE ERROR --- */}
+                {/* --- CONFIG HINT FOR DRIVE ERROR (FIXED 400 ERROR) --- */}
                 {showConfigHint && (
-                     <div className="bg-red-50 p-4 rounded-xl border border-red-200 mb-4 animate-slide-up relative shrink-0">
+                     <div className="bg-red-50 p-4 rounded-xl border-2 border-red-200 mb-4 animate-slide-up relative shrink-0">
                          <button onClick={()=>setShowConfigHint(false)} className="absolute top-2 right-2 text-red-400 hover:text-red-600"><Icon name="fa-times"/></button>
-                         <h4 className="font-bold text-red-700 text-sm mb-1"><Icon name="fa-exclamation-circle"/> Problemas de Conexión</h4>
-                         <p className="text-xs text-red-600 leading-relaxed mb-2">
-                             Google bloqueó el acceso (Error 400). Esto pasa cuando la URL de la web cambia.
-                         </p>
-                         <button 
-                            onClick={() => { onClose(); alert("Ve al Dashboard > Engranaje > Cuadro Rojo para copiar la URL exacta."); }}
-                            className="bg-red-600 text-white text-xs px-3 py-2 rounded font-bold shadow-sm hover:bg-red-700"
-                         >
-                            Ir a Solucionarlo
-                         </button>
+                         <div className="flex gap-3">
+                            <div className="text-3xl text-red-500"><Icon name="fa-exclamation-triangle"/></div>
+                            <div className="flex-1">
+                                <h4 className="font-bold text-red-800 text-sm mb-1">Error de Autorización Google (400)</h4>
+                                <p className="text-xs text-red-700 leading-relaxed mb-2">
+                                    La URL actual no está autorizada en tu Google Cloud Console. 
+                                    Debes agregar exactamente este origen en <strong>Authorized JavaScript origins</strong>:
+                                </p>
+                                <div className="flex gap-2 mb-2">
+                                    <code className="bg-white border border-red-200 p-2 rounded text-xs font-mono font-bold text-red-800 flex-1 truncate select-all">
+                                        {currentOrigin}
+                                    </code>
+                                    <button 
+                                        onClick={() => { navigator.clipboard.writeText(currentOrigin); alert("URL copiada al portapapeles."); }}
+                                        className="bg-red-200 hover:bg-red-300 text-red-800 px-3 py-1 rounded text-xs font-bold"
+                                    >
+                                        Copiar
+                                    </button>
+                                </div>
+                                <p className="text-[10px] text-red-500">
+                                    Si no eres el administrador, contacta a soporte.
+                                </p>
+                            </div>
+                         </div>
                      </div>
                 )}
 
+                {/* ... existing code ... */}
                 {/* --- STRUCTURE PICKER OVERLAY --- */}
                 {isPickerOpen && (
                     <div className="absolute inset-0 bg-white z-50 flex flex-col animate-fade-in">
-                        <div className="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
+                        {/* ... same as before ... */}
+                         <div className="p-4 border-b bg-slate-50 flex justify-between items-center shrink-0">
                              <div>
                                  <h3 className="font-bold text-slate-800 text-lg">Seleccionar Carpeta Raíz</h3>
                                  <p className="text-xs text-slate-500">Navega y selecciona dónde crear el proyecto.</p>
@@ -746,7 +748,7 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                     </div>
                 )}
 
-                {/* TOKEN INPUT MODAL - IMPROVED FOR FIXING */}
+                {/* TOKEN INPUT MODAL */}
                 {showTokenInput && (
                     <div className="absolute inset-0 z-[100] bg-slate-900/90 flex items-center justify-center p-6 animate-fade-in">
                         <div className="bg-white rounded-xl w-full max-w-sm p-6 shadow-2xl">
@@ -800,7 +802,6 @@ export const RepositoryManager = ({ project, initialType, onClose, onUpdateProje
                         <div className="flex gap-3 justify-center">
                             <button onClick={() => { setUploadState('idle'); setCreationStatus('idle'); }} className="px-6 py-2 bg-slate-200 text-slate-700 rounded-lg font-bold hover:bg-slate-300">Volver</button>
                             
-                            {/* New: Button to Fix Token Error */}
                             {(uploadStatusMsg?.toLowerCase().includes('token') || uploadStatusMsg?.toLowerCase().includes('github') || uploadStatusMsg?.includes('401') || creationLog?.toLowerCase().includes('token')) && (
                                  <button 
                                     onClick={() => { 
