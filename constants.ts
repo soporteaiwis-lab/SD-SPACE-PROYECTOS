@@ -41,7 +41,8 @@ const getEnvVar = (key: string): string => {
 const HARDCODED_KEYS = {
     GEMINI: "PEGAR_AQUI_TU_API_KEY_DE_GEMINI",
     GITHUB: "PEGAR_AQUI_TU_TOKEN_GITHUB_PAT",
-    DRIVE_CLIENT_ID: "89422266816-meh16hnsdp10313n2uo94s5erqc2kri5.apps.googleusercontent.com" // Ya puse el ID de tu imagen
+    // ID ACTUALIZADO SEGÚN EVIDENCIA DE GOOGLE CLOUD CONSOLE (Terminación gqp0)
+    DRIVE_CLIENT_ID: "89422266816-u5nshe6d09vf4i72efirip5khd66gqp0.apps.googleusercontent.com" 
 };
 
 export const APP_CONFIG = {
