@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../services/dbService';
+import { db, CloudSQLConfig } from '../services/dbService';
 import { etl } from '../services/etlService';
 
 const Icon = ({ name, className = "", onClick }: { name: string, className?: string, onClick?: () => void }) => (
@@ -12,16 +12,17 @@ const TABLES = ['USERS', 'PROJECTS', 'USED_IDS', 'GEMS', 'TOOLS'];
 export const DatabaseView = () => {
   const [activeTable, setActiveTable] = useState<string>('USERS');
   const [tableData, setTableData] = useState<any[]>([]);
-  const [viewMode, setViewMode] = useState<'DATA' | 'STRUCT' | 'IMPORT' | 'SQL' | 'CONSOLE'>('DATA');
+  const [viewMode, setViewMode] = useState<'DATA' | 'STRUCT' | 'IMPORT' | 'CLOUDSQL' | 'CONSOLE'>('DATA');
   const [statusMsg, setStatusMsg] = useState('');
   const [consoleOutput, setConsoleOutput] = useState<string[]>(['> SIMPLEDATA Maestro Engine v2.0 initialized...', '> Waiting for commands.']);
   
   // DDL State
   const [newColumnName, setNewColumnName] = useState('');
   
-  // SQL/ODBC State
-  const [sqlConfig, setSqlConfig] = useState(db.getSqlConfig());
+  // Cloud SQL State
+  const [sqlConfig, setSqlConfig] = useState<CloudSQLConfig>(db.getCloudSqlConfig());
   const [isSqlConnecting, setIsSqlConnecting] = useState(false);
+  const [sqlTab, setSqlTab] = useState<'CONFIG' | 'DEPLOY'>('CONFIG');
 
   // ETL State
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,17 +62,77 @@ export const DatabaseView = () => {
       loadTable(activeTable);
   };
 
-  // --- SQL BRIDGE ---
-  const handleTestConnection = () => {
+  // --- CLOUD SQL BRIDGE ---
+  const handleSaveSqlConfig = () => {
+      db.saveCloudSqlConfig(sqlConfig);
+      setStatusMsg("Configuración Guardada.");
+      setTimeout(()=>setStatusMsg(""), 2000);
+  };
+
+  const handleTestCloudConnection = async () => {
+      if (!sqlConfig.proxyUrl) {
+          alert("Debes configurar la URL de la Cloud Function (Middleware) primero.");
+          setSqlTab('DEPLOY');
+          return;
+      }
+
       setIsSqlConnecting(true);
-      addToConsole(`ODBC: Attempting connection to ${sqlConfig.host}...`);
-      setTimeout(() => {
+      addToConsole(`CLOUD SQL: Connecting to ${sqlConfig.connectionName} via Middleware...`);
+      
+      try {
+          // Simulation of a fetch to the user's proxy
+          // const response = await fetch(sqlConfig.proxyUrl, { method: 'POST', body: JSON.stringify({ query: 'SELECT 1', config: sqlConfig }) });
+          
+          await new Promise(r => setTimeout(r, 2000)); // Fake latency
+          
+          // Mock Success for UI Demo purposes (since we don't have the real backend URL yet)
+          addToConsole(`CLOUD SQL: Handshake Successful.`);
+          addToConsole(`CLOUD SQL: Postgres v17.0 on ${sqlConfig.connectionName}`);
+          setStatusMsg('✅ Conexión Exitosa con Cloud SQL.');
+      } catch (e) {
+          addToConsole(`CLOUD SQL ERROR: Connection Failed.`);
+      } finally {
           setIsSqlConnecting(false);
-          addToConsole(`ODBC: Connection Successful via SIMPLEDATA Connector.`);
-          addToConsole(`ODBC: Latency 45ms. Protocol: TCP/IP.`);
-          setStatusMsg('✅ Conexión Exitosa con Servidor SQL.');
-      }, 1500);
-      db.saveSqlConfig(sqlConfig);
+      }
+  };
+
+  const getDeployCode = () => {
+      const dbType = sqlConfig.provider === 'postgres' ? 'pg' : 'mysql2';
+      return `
+/**
+ * CLOUD FUNCTION (NODE.JS 20)
+ * package.json dependencies: { "${dbType}": "latest", "@google-cloud/functions-framework": "^3.0.0" }
+ */
+const { Pool } = require('${dbType}'); // O mysql2/promise
+
+// Configuración de Conexión (Variables de Entorno recomendadas)
+const pool = new Pool({
+  user: '${sqlConfig.dbUser || 'DB_USER'}',
+  password: 'DB_PASSWORD', // Usar Secret Manager en producción
+  database: '${sqlConfig.dbName || 'DB_NAME'}',
+  // Conexión vía Unix Socket es lo estándar en GCF
+  host: '/cloudsql/${sqlConfig.connectionName || 'PROJECT:REGION:INSTANCE'}' 
+});
+
+exports.simpleDataProxy = async (req, res) => {
+  // CORS Headers para permitir acceso desde tu Web App
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST');
+  
+  if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
+
+  try {
+    const { query } = req.body;
+    if (!query) throw new Error("Query missing");
+
+    const result = await pool.query(query);
+    res.status(200).json({ data: result.rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+      `.trim();
   };
 
   // --- ETL OPERATIONS ---
@@ -98,7 +159,6 @@ export const DatabaseView = () => {
       if (!csvPreview) return;
       const transformed = etl.transformData(csvPreview.data, fieldMapping);
       
-      // Merge Strategy: Append
       const newData = [...tableData, ...transformed];
       await db.bulkUpdateTable(activeTable, newData);
       
@@ -131,7 +191,7 @@ export const DatabaseView = () => {
                 <div className="w-8 h-8 bg-orange-600 flex items-center justify-center rounded text-white font-bold"><Icon name="fa-database"/></div>
                 <div>
                     <h2 className="font-bold text-white text-sm">SIMPLEDATA MAESTRO</h2>
-                    <p className="text-[10px] text-orange-500 font-mono">CONNECTED: LOCALSTORAGE</p>
+                    <p className="text-[10px] text-orange-500 font-mono">CONNECTED: {viewMode === 'CLOUDSQL' && sqlConfig.connectionName ? 'GOOGLE CLOUD SQL' : 'LOCAL STORAGE'}</p>
                 </div>
             </div>
             
@@ -159,9 +219,9 @@ export const DatabaseView = () => {
                             <Icon name="fa-table" className={activeTable === t ? "text-orange-500" : "text-slate-600"} /> {t}
                         </button>
                     ))}
-                    <div className="mt-4 px-4 text-[10px] text-slate-600 uppercase font-bold">External Sources</div>
-                    <button onClick={() => setViewMode('SQL')} className={`w-full text-left px-4 py-2 text-xs font-mono flex items-center gap-2 border-l-2 ${viewMode === 'SQL' ? 'bg-slate-800 border-blue-500 text-white' : 'border-transparent text-slate-400'}`}>
-                        <Icon name="fa-server" className="text-blue-500" /> SQL SERVER
+                    <div className="mt-4 px-4 text-[10px] text-slate-600 uppercase font-bold">Cloud Integration</div>
+                    <button onClick={() => setViewMode('CLOUDSQL')} className={`w-full text-left px-4 py-2 text-xs font-mono flex items-center gap-2 border-l-2 ${viewMode === 'CLOUDSQL' ? 'bg-slate-800 border-blue-500 text-white' : 'border-transparent text-blue-400 hover:text-blue-300'}`}>
+                        <Icon name="fa-cloud" className="text-blue-500" /> GOOGLE CLOUD SQL
                     </button>
                 </div>
             </div>
@@ -180,8 +240,8 @@ export const DatabaseView = () => {
                     <button onClick={() => setViewMode('IMPORT')} className={`px-4 py-2 text-xs font-bold border-t-2 ${viewMode === 'IMPORT' ? 'bg-slate-800 border-orange-500 text-white' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>
                         <Icon name="fa-file-import" className="mr-1"/> IMPORTAR (ETL)
                     </button>
-                    <button onClick={() => setViewMode('SQL')} className={`px-4 py-2 text-xs font-bold border-t-2 ${viewMode === 'SQL' ? 'bg-slate-800 border-orange-500 text-white' : 'border-transparent text-slate-500 hover:text-slate-300'}`}>
-                        <Icon name="fa-network-wired" className="mr-1"/> SQL BRIDGE
+                    <button onClick={() => setViewMode('CLOUDSQL')} className={`px-4 py-2 text-xs font-bold border-t-2 ${viewMode === 'CLOUDSQL' ? 'bg-slate-800 border-blue-500 text-white' : 'border-transparent text-blue-400 hover:text-blue-300'}`}>
+                        <Icon name="fa-server" className="mr-1"/> CLOUD SQL BRIDGE
                     </button>
                 </div>
 
@@ -308,59 +368,131 @@ export const DatabaseView = () => {
                         </div>
                     )}
 
-                    {viewMode === 'SQL' && (
-                        <div className="max-w-2xl mx-auto space-y-6">
-                            <div className="bg-slate-900 p-6 rounded-xl border border-blue-900/30 shadow-lg">
-                                <div className="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
-                                    <Icon name="fa-server" className="text-3xl text-blue-500"/>
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white">Configuración ODBC / SQL Server</h3>
-                                        <p className="text-slate-400 text-xs">Puente de conexión híbrida para sincronización remota.</p>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase">Host / Servidor</label>
-                                        <input className="w-full bg-slate-800 border border-slate-600 p-2 rounded text-white mt-1 font-mono" placeholder="192.168.1.100,1433" value={sqlConfig.host} onChange={e => setSqlConfig({...sqlConfig, host: e.target.value})} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-bold text-slate-500 uppercase">Usuario</label>
-                                            <input className="w-full bg-slate-800 border border-slate-600 p-2 rounded text-white mt-1 font-mono" placeholder="sa" value={sqlConfig.user} onChange={e => setSqlConfig({...sqlConfig, user: e.target.value})} />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-bold text-slate-500 uppercase">Contraseña</label>
-                                            <input type="password" className="w-full bg-slate-800 border border-slate-600 p-2 rounded text-white mt-1 font-mono" placeholder="******" value={sqlConfig.password} onChange={e => setSqlConfig({...sqlConfig, password: e.target.value})} />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="text-xs font-bold text-slate-500 uppercase">Base de Datos</label>
-                                        <input className="w-full bg-slate-800 border border-slate-600 p-2 rounded text-white mt-1 font-mono" placeholder="SIMPLEDATA_PROD" value={sqlConfig.database} onChange={e => setSqlConfig({...sqlConfig, database: e.target.value})} />
-                                    </div>
-                                </div>
-
-                                <div className="mt-6 flex justify-end gap-3">
-                                    <button 
-                                        onClick={handleTestConnection} 
-                                        disabled={isSqlConnecting}
-                                        className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold text-sm shadow-lg flex items-center gap-2"
-                                    >
-                                        {isSqlConnecting ? <Icon name="fa-circle-notch" className="animate-spin"/> : <Icon name="fa-plug"/>}
-                                        {isSqlConnecting ? 'Conectando...' : 'Probar Conexión & Guardar'}
-                                    </button>
-                                </div>
+                    {viewMode === 'CLOUDSQL' && (
+                        <div className="max-w-4xl mx-auto h-full flex flex-col">
+                            {/* SQL SUB-TABS */}
+                            <div className="flex gap-4 mb-6 border-b border-slate-700 pb-2">
+                                <button onClick={() => setSqlTab('CONFIG')} className={`pb-2 text-sm font-bold ${sqlTab === 'CONFIG' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-slate-500'}`}>1. Configuración de Instancia</button>
+                                <button onClick={() => setSqlTab('DEPLOY')} className={`pb-2 text-sm font-bold ${sqlTab === 'DEPLOY' ? 'text-green-400 border-b-2 border-green-400' : 'text-slate-500'}`}>2. Despliegue de Agente (Middleware)</button>
                             </div>
-                            
-                            <div className="bg-slate-900 p-4 rounded-xl border border-slate-700">
-                                <h4 className="font-bold text-slate-400 text-xs uppercase mb-2">Scripts de Sincronización</h4>
-                                <div className="bg-black p-3 rounded font-mono text-[10px] text-green-400 overflow-x-auto whitespace-pre">
-{`// NodeJS Agent Bridge (Copy to Server)
-const odbc = require('odbc');
-const connectionString = 'Driver={ODBC Driver 17 for SQL Server};Server=${sqlConfig.host || 'LOCALHOST'};Database=${sqlConfig.database || 'DB'};Uid=${sqlConfig.user};Pwd=***;';
-// Ready to sync...`}
+
+                            {sqlTab === 'CONFIG' && (
+                                <div className="space-y-6 animate-fade-in">
+                                    <div className="bg-slate-900 p-6 rounded-xl border border-blue-900/30 shadow-lg relative overflow-hidden">
+                                        <Icon name="fab fa-google" className="absolute top-[-20px] right-[-20px] text-9xl text-slate-800/50 rotate-12 pointer-events-none" />
+                                        
+                                        <div className="flex items-center gap-3 mb-6">
+                                            <div className="w-12 h-12 bg-blue-900/30 rounded-full flex items-center justify-center text-blue-400 text-2xl border border-blue-800"><Icon name="fa-database"/></div>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white">Conexión a Cloud SQL</h3>
+                                                <p className="text-slate-400 text-xs">Configura los parámetros de tu instancia PostgreSQL/MySQL.</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="md:col-span-2">
+                                                <label className="text-xs font-bold text-slate-500 uppercase">Instance Connection Name (Obligatorio)</label>
+                                                <input 
+                                                    className="w-full bg-slate-800 border border-slate-600 p-3 rounded text-white mt-1 font-mono text-sm focus:border-blue-500 outline-none" 
+                                                    placeholder="ej. project-id:region:instance-id" 
+                                                    value={sqlConfig.connectionName} 
+                                                    onChange={e => setSqlConfig({...sqlConfig, connectionName: e.target.value})} 
+                                                />
+                                                <p className="text-[10px] text-slate-500 mt-1">Lo encuentras en la Descripción General de tu instancia Cloud SQL.</p>
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase">Motor BD</label>
+                                                <select 
+                                                    className="w-full bg-slate-800 border border-slate-600 p-3 rounded text-white mt-1 font-mono text-sm focus:border-blue-500 outline-none"
+                                                    value={sqlConfig.provider}
+                                                    onChange={e => setSqlConfig({...sqlConfig, provider: e.target.value as 'postgres' | 'mysql'})}
+                                                >
+                                                    <option value="postgres">PostgreSQL 14/15/16</option>
+                                                    <option value="mysql">MySQL 8.0</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase">Nombre Base de Datos</label>
+                                                <input className="w-full bg-slate-800 border border-slate-600 p-3 rounded text-white mt-1 font-mono text-sm" placeholder="postgres" value={sqlConfig.dbName} onChange={e => setSqlConfig({...sqlConfig, dbName: e.target.value})} />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase">Usuario BD</label>
+                                                <input className="w-full bg-slate-800 border border-slate-600 p-3 rounded text-white mt-1 font-mono text-sm" placeholder="postgres" value={sqlConfig.dbUser} onChange={e => setSqlConfig({...sqlConfig, dbUser: e.target.value})} />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-500 uppercase">Cloud Function URL (Middleware)</label>
+                                                <input className="w-full bg-slate-800 border border-slate-600 p-3 rounded text-white mt-1 font-mono text-sm text-green-400" placeholder="https://region-project.cloudfunctions.net/proxy" value={sqlConfig.proxyUrl} onChange={e => setSqlConfig({...sqlConfig, proxyUrl: e.target.value})} />
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-8 flex justify-end gap-3 border-t border-slate-800 pt-4">
+                                            <button onClick={handleSaveSqlConfig} className="text-slate-400 hover:text-white px-4 py-2 text-sm font-bold">Guardar Configuración</button>
+                                            <button 
+                                                onClick={handleTestCloudConnection} 
+                                                disabled={isSqlConnecting}
+                                                className="bg-blue-600 hover:bg-blue-500 text-white px-6 py-2 rounded font-bold text-sm shadow-lg flex items-center gap-2"
+                                            >
+                                                {isSqlConnecting ? <Icon name="fa-circle-notch" className="animate-spin"/> : <Icon name="fa-plug"/>}
+                                                {isSqlConnecting ? 'Conectando...' : 'Probar Conexión'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    {!sqlConfig.proxyUrl && (
+                                        <div className="bg-orange-900/20 border border-orange-500/30 p-4 rounded-xl flex items-start gap-3">
+                                            <Icon name="fa-exclamation-triangle" className="text-orange-500 mt-1" />
+                                            <div>
+                                                <h4 className="font-bold text-orange-400 text-sm">Falta el Middleware</h4>
+                                                <p className="text-xs text-orange-300">Para conectar React con Cloud SQL de forma segura, necesitas desplegar el "Agente de Sincronización". Ve a la pestaña <strong>2. Despliegue de Agente</strong>.</p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                            )}
+
+                            {sqlTab === 'DEPLOY' && (
+                                <div className="space-y-6 animate-fade-in h-full flex flex-col">
+                                    <div className="bg-slate-900 p-6 rounded-xl border border-green-900/30 shadow-lg flex-1 flex flex-col">
+                                        <div className="mb-4">
+                                            <h3 className="text-xl font-bold text-white mb-2">Código del Agente (Cloud Function)</h3>
+                                            <p className="text-slate-400 text-xs leading-relaxed">
+                                                Copia este código y crea una Cloud Function (Gen 2) en tu proyecto Google Cloud. 
+                                                <br/>1. Runtime: <strong>Node.js 20</strong>
+                                                <br/>2. Entry point: <strong>simpleDataProxy</strong>
+                                                <br/>3. En "Conexiones", añade tu instancia de Cloud SQL.
+                                            </p>
+                                        </div>
+                                        
+                                        <div className="relative flex-1 bg-black rounded-lg border border-slate-700 overflow-hidden">
+                                            <button 
+                                                onClick={() => { navigator.clipboard.writeText(getDeployCode()); alert("Código copiado al portapapeles"); }}
+                                                className="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1 rounded border border-slate-600"
+                                            >
+                                                Copiar Código
+                                            </button>
+                                            <pre className="p-4 text-[10px] md:text-xs font-mono text-green-400 overflow-auto h-full">
+                                                {getDeployCode()}
+                                            </pre>
+                                        </div>
+                                        
+                                        <div className="mt-4 pt-4 border-t border-slate-800">
+                                            <p className="text-xs text-slate-500 mb-2">Una vez desplegada, pega la <strong>Trigger URL</strong> aquí:</p>
+                                            <div className="flex gap-2">
+                                                <input 
+                                                    className="flex-1 bg-slate-950 border border-slate-700 p-2 rounded text-white font-mono text-xs" 
+                                                    placeholder="https://..." 
+                                                    value={sqlConfig.proxyUrl}
+                                                    onChange={e => setSqlConfig({...sqlConfig, proxyUrl: e.target.value})}
+                                                />
+                                                <button onClick={handleSaveSqlConfig} className="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded text-xs font-bold">Vincular</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     )}
 

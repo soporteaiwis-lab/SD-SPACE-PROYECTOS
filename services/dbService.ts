@@ -6,10 +6,18 @@ const USERS_KEY = 'SIMPLEDATA_users_v1';
 const PROJECTS_KEY = 'SIMPLEDATA_projects_v1';
 const GEMS_KEY = 'SIMPLEDATA_gems_v1';
 const TOOLS_KEY = 'SIMPLEDATA_tools_v1';
-const USED_IDS_KEY = 'SIMPLEDATA_used_ids_v1'; // NEW TABLE for Correlatives
-const SQL_CONFIG_KEY = 'SIMPLEDATA_sql_config_v1'; // New Key for ODBC Config
+const USED_IDS_KEY = 'SIMPLEDATA_used_ids_v1'; 
+const CLOUD_SQL_CONFIG_KEY = 'SIMPLEDATA_cloud_sql_config_v1'; // Renamed for Cloud SQL
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export interface CloudSQLConfig {
+    connectionName: string; // e.g. project:region:instance
+    dbName: string;
+    dbUser: string;
+    proxyUrl: string; // The Cloud Function URL
+    provider: 'postgres' | 'mysql';
+}
 
 export class DBService {
   private users: User[] = [];
@@ -17,7 +25,13 @@ export class DBService {
   private gems: Gem[] = [];
   private tools: Tool[] = [];
   private usedIds: UsedID[] = [];
-  private sqlConfig: any = {};
+  private cloudSqlConfig: CloudSQLConfig = { 
+      connectionName: '', 
+      dbName: '', 
+      dbUser: '', 
+      proxyUrl: '',
+      provider: 'postgres' 
+  };
 
   constructor() {
     this.loadInitialData();
@@ -29,14 +43,17 @@ export class DBService {
     const savedGems = localStorage.getItem(GEMS_KEY);
     const savedTools = localStorage.getItem(TOOLS_KEY);
     const savedIds = localStorage.getItem(USED_IDS_KEY);
-    const savedSql = localStorage.getItem(SQL_CONFIG_KEY);
+    const savedSql = localStorage.getItem(CLOUD_SQL_CONFIG_KEY);
 
     let localUsers: User[] = savedUsers ? JSON.parse(savedUsers) : [];
     let localProjects: Project[] = savedProjects ? JSON.parse(savedProjects) : [];
     let localGems: Gem[] = savedGems ? JSON.parse(savedGems) : [];
     let localTools: Tool[] = savedTools ? JSON.parse(savedTools) : [];
     let localUsedIds: UsedID[] = savedIds ? JSON.parse(savedIds) : [];
-    this.sqlConfig = savedSql ? JSON.parse(savedSql) : { host: '', user: '', database: '', provider: 'SQL Server' };
+    
+    if (savedSql) {
+        this.cloudSqlConfig = JSON.parse(savedSql);
+    }
 
     // --- CRITICAL CLEANUP: PURGE LEGACY ADA USERS ---
     localUsers = localUsers.filter(u => !u.email.toLowerCase().includes('@ada.cl'));
@@ -52,7 +69,7 @@ export class DBService {
         return p;
     });
 
-    // Merge Init Data logic (Simplified for this update)
+    // Merge Init Data logic
     if (localUsers.length === 0) localUsers = [...INITIAL_USERS];
     if (localProjects.length === 0) localProjects = [...INITIAL_PROJECTS];
     if (localGems.length === 0) localGems = [...INITIAL_GEMS];
@@ -64,7 +81,6 @@ export class DBService {
     this.tools = localTools;
     this.usedIds = localUsedIds;
     
-    // Auto-save merged state immediately to ensure clean state
     this.saveAll();
   }
 
@@ -74,12 +90,11 @@ export class DBService {
     localStorage.setItem(GEMS_KEY, JSON.stringify(this.gems));
     localStorage.setItem(TOOLS_KEY, JSON.stringify(this.tools));
     localStorage.setItem(USED_IDS_KEY, JSON.stringify(this.usedIds));
-    localStorage.setItem(SQL_CONFIG_KEY, JSON.stringify(this.sqlConfig));
+    localStorage.setItem(CLOUD_SQL_CONFIG_KEY, JSON.stringify(this.cloudSqlConfig));
   }
 
   // --- DDL & ADVANCED MANAGEMENT ---
 
-  // Get raw collection by name
   getTableData(tableName: string): any[] {
       switch(tableName) {
           case 'USERS': return this.users;
@@ -91,7 +106,6 @@ export class DBService {
       }
   }
 
-  // DDL: Add Column / Drop Column
   async alterTable(tableName: string, action: 'ADD_COLUMN' | 'DROP_COLUMN', fieldName: string, defaultValue: any = null) {
       const data = this.getTableData(tableName);
       if (!data) return;
@@ -108,7 +122,6 @@ export class DBService {
       await this.bulkUpdateTable(tableName, updatedData);
   }
 
-  // Bulk Insert / Update (ETL)
   async bulkUpdateTable(tableName: string, newData: any[]) {
       switch(tableName) {
           case 'USERS': this.users = newData; break;
@@ -120,9 +133,13 @@ export class DBService {
       this.saveAll();
   }
 
-  // SQL Config Management
-  getSqlConfig() { return this.sqlConfig; }
-  saveSqlConfig(config: any) { this.sqlConfig = config; this.saveAll(); }
+  // --- CLOUD SQL CONFIG ---
+  getCloudSqlConfig() { return this.cloudSqlConfig; }
+  
+  saveCloudSqlConfig(config: CloudSQLConfig) { 
+      this.cloudSqlConfig = config; 
+      this.saveAll(); 
+  }
 
   // --- STANDARD CRUD ---
 
