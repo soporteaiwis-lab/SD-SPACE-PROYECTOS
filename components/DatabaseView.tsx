@@ -24,6 +24,7 @@ export const DatabaseView = () => {
   const [isSqlConnecting, setIsSqlConnecting] = useState(false);
   const [isMigrating, setIsMigrating] = useState(false);
   const [sqlTab, setSqlTab] = useState<'CONFIG' | 'DEPLOY'>('CONFIG');
+  const [deployFileTab, setDeployFileTab] = useState<'INDEX' | 'PACKAGE'>('INDEX');
 
   // ETL State
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,8 +41,6 @@ export const DatabaseView = () => {
   };
 
   const loadTable = (key: string) => {
-      // This loads local cache instantly.
-      // In a full implementation, this could verify against cloud, but we trust dbService sync.
       const data = db.getTableData(key);
       setTableData(data);
       addToConsole(`LOAD TABLE: ${key} (${data.length} records)`);
@@ -83,17 +82,12 @@ export const DatabaseView = () => {
       addToConsole(`CLOUD SQL: Connecting to ${sqlConfig.connectionName} via Middleware...`);
       
       try {
-          // Try a simple SELECT 1 to verify middleware and DB connection
           await db.executeSql('SELECT 1');
-          
           addToConsole(`CLOUD SQL: Handshake Successful.`);
           addToConsole(`CLOUD SQL: Connected to ${sqlConfig.connectionName}`);
           setStatusMsg('✅ Conexión Exitosa con Cloud SQL.');
-          
-          // Auto-enable active mode
           setSqlConfig(prev => ({ ...prev, isActive: true }));
           db.saveCloudSqlConfig({ ...sqlConfig, isActive: true });
-          
       } catch (e: any) {
           addToConsole(`CLOUD SQL ERROR: ${e.message}`);
           alert("Error de Conexión: " + e.message);
@@ -134,39 +128,50 @@ export const DatabaseView = () => {
       }
   };
 
-  const getDeployCode = () => {
+  const getPackageJson = () => {
+      const dbType = sqlConfig.provider === 'postgres' ? 'pg' : 'mysql2';
+      return JSON.stringify({
+        "name": "simpledata-proxy",
+        "version": "1.0.0",
+        "main": "index.js",
+        "dependencies": {
+          "@google-cloud/functions-framework": "^3.0.0",
+          [dbType]: "^8.11.0"
+        }
+      }, null, 2);
+  };
+
+  const getIndexJs = () => {
       const dbType = sqlConfig.provider === 'postgres' ? 'pg' : 'mysql2';
       return `
-/**
- * CLOUD FUNCTION (NODE.JS 20)
- * package.json dependencies: { "${dbType}": "latest", "@google-cloud/functions-framework": "^3.0.0" }
- */
-const { Pool } = require('${dbType}'); // O mysql2/promise
+const { Pool } = require('${dbType}');
 
 // Configuración de Conexión
 const pool = new Pool({
-  user: '${sqlConfig.dbUser || 'DB_USER'}',
-  password: 'DB_PASSWORD', // Usar Secret Manager en producción
-  database: '${sqlConfig.dbName || 'DB_NAME'}',
+  user: '${sqlConfig.dbUser || 'postgres'}',
+  password: 'TU_PASSWORD_DB', // <--- REEMPLAZA ESTO EN GOOGLE CLOUD
+  database: '${sqlConfig.dbName || 'postgres'}',
   // Conexión vía Unix Socket (Recomendado para GCF)
   host: '/cloudsql/${sqlConfig.connectionName || 'PROJECT:REGION:INSTANCE'}' 
 });
 
 exports.simpleDataProxy = async (req, res) => {
+  // Headers CORS para permitir acceso desde tu Web App
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Headers', 'Content-Type');
   res.set('Access-Control-Allow-Methods', 'POST');
   
+  // Manejo de pre-flight request (OPTIONS)
   if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
 
   try {
-    const { query, params } = req.body; // params is array
+    const { query, params } = req.body; 
     if (!query) throw new Error("Query missing");
 
-    // Ejecutar Query con Parámetros (Seguro)
+    // Ejecutar Query
     const result = await pool.query(query, params || []);
     
-    // Normalizar respuesta
+    // Normalizar respuesta (pg devuelve .rows, mysql devuelve [rows])
     const rows = result.rows || result[0] || [];
     res.status(200).json({ data: rows });
   } catch (err) {
@@ -200,11 +205,6 @@ exports.simpleDataProxy = async (req, res) => {
   const executeImport = async () => {
       if (!csvPreview) return;
       const transformed = etl.transformData(csvPreview.data, fieldMapping);
-      
-      // Update local and cloud implicitly via altered alterTable logic logic or manual
-      // For now, simpler to reuse the dbService generic approach, but we need access to raw update
-      // We will skip this for the 'SQL' specific response to focus on SQL Migration, 
-      // but log it:
       addToConsole(`ETL: Import simulated. To persist, use standard add methods.`);
       setCsvPreview(null);
   };
@@ -448,20 +448,40 @@ exports.simpleDataProxy = async (req, res) => {
                                     <div className="bg-slate-900 p-6 rounded-xl border border-green-900/30 shadow-lg flex-1 flex flex-col">
                                         <div className="mb-4">
                                             <h3 className="text-xl font-bold text-white mb-2">Código del Agente (Cloud Function) v2.1</h3>
-                                            <p className="text-slate-400 text-xs leading-relaxed">
-                                                Este nuevo código es seguro y soporta parámetros SQL. Despliégalo en Google Cloud Functions.
+                                            <p className="text-slate-400 text-xs leading-relaxed mb-4">
+                                                ATENCIÓN: Debes crear 2 archivos separados en Google Cloud Console. 
+                                                No pegues código Javascript en package.json.
                                             </p>
+                                            
+                                            <div className="flex gap-2 border-b border-slate-700">
+                                                <button 
+                                                    onClick={() => setDeployFileTab('INDEX')}
+                                                    className={`px-4 py-2 text-xs font-bold border-t border-l border-r rounded-t-lg transition-colors ${deployFileTab === 'INDEX' ? 'bg-black border-slate-600 text-green-400' : 'bg-slate-800 border-transparent text-slate-500'}`}
+                                                >
+                                                    1. index.js (Lógica)
+                                                </button>
+                                                <button 
+                                                    onClick={() => setDeployFileTab('PACKAGE')}
+                                                    className={`px-4 py-2 text-xs font-bold border-t border-l border-r rounded-t-lg transition-colors ${deployFileTab === 'PACKAGE' ? 'bg-black border-slate-600 text-yellow-400' : 'bg-slate-800 border-transparent text-slate-500'}`}
+                                                >
+                                                    2. package.json (Dependencias)
+                                                </button>
+                                            </div>
                                         </div>
                                         
-                                        <div className="relative flex-1 bg-black rounded-lg border border-slate-700 overflow-hidden">
+                                        <div className="relative flex-1 bg-black rounded-b-lg border border-slate-700 overflow-hidden">
                                             <button 
-                                                onClick={() => { navigator.clipboard.writeText(getDeployCode()); alert("Código copiado al portapapeles"); }}
-                                                className="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1 rounded border border-slate-600"
+                                                onClick={() => { 
+                                                    const code = deployFileTab === 'INDEX' ? getIndexJs() : getPackageJson();
+                                                    navigator.clipboard.writeText(code); 
+                                                    alert(`${deployFileTab === 'INDEX' ? 'index.js' : 'package.json'} copiado.`); 
+                                                }}
+                                                className="absolute top-2 right-2 bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1 rounded border border-slate-600 z-10"
                                             >
-                                                Copiar Código
+                                                Copiar
                                             </button>
-                                            <pre className="p-4 text-[10px] md:text-xs font-mono text-green-400 overflow-auto h-full">
-                                                {getDeployCode()}
+                                            <pre className={`p-4 text-[10px] md:text-xs font-mono overflow-auto h-full ${deployFileTab === 'INDEX' ? 'text-green-400' : 'text-yellow-400'}`}>
+                                                {deployFileTab === 'INDEX' ? getIndexJs() : getPackageJson()}
                                             </pre>
                                         </div>
                                     </div>
