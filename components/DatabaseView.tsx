@@ -460,14 +460,27 @@ exports.simpleDataProxy = async (req, res) => {
                                         <div className="mb-4">
                                             <h3 className="text-xl font-bold text-white mb-2">Código del Agente (Cloud Function) v2.1</h3>
                                             
-                                            {/* IMPORTANT WARNING BOX */}
+                                            {/* IMPORTANT WARNING BOX - POINT OF ENTRY */}
                                             <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-lg mb-4 text-xs text-red-200">
-                                                <h4 className="font-bold flex items-center gap-2 mb-1"><Icon name="fa-exclamation-triangle" /> IMPORTANTE: CONFIGURACIÓN DE INICIO</h4>
-                                                <p>Al implementar en Google Cloud, debes cambiar el campo <strong>"Punto de entrada"</strong>.</p>
-                                                <p className="mt-2 font-mono bg-black/50 p-2 rounded text-green-400">
-                                                    Incorrecto: package.json<br/>
-                                                    Correcto: <strong>simpleDataProxy</strong>
-                                                </p>
+                                                <h4 className="font-bold flex items-center gap-2 mb-1"><Icon name="fa-exclamation-triangle" /> IMPORTANTE: CONFIGURACIÓN INICIAL</h4>
+                                                <ul className="list-disc pl-4 space-y-1 mt-2">
+                                                    <li>Punto de entrada: <strong>simpleDataProxy</strong> (No usar package.json)</li>
+                                                </ul>
+                                            </div>
+
+                                            {/* IMPORTANT WARNING BOX - SQL CONNECTION (FIX FOR ENOENT) */}
+                                            <div className="bg-blue-900/20 border border-blue-500/50 p-4 rounded-lg mb-4 text-xs text-blue-200">
+                                                <h4 className="font-bold flex items-center gap-2 mb-1"><Icon name="fa-plug" /> SOLUCIÓN ERROR DE CONEXIÓN (ENOENT)</h4>
+                                                <p className="mb-2">Si ves el error "ENOENT /cloudsql/...", significa que la Cloud Function no tiene permiso para ver la BD.</p>
+                                                <p className="font-bold text-white mb-1">Debes hacer esto en Google Cloud Console:</p>
+                                                <ol className="list-decimal pl-4 space-y-1">
+                                                    <li>Edita tu Cloud Function (Revisión).</li>
+                                                    <li>Ve a <strong>"Configuración"</strong> &rarr; <strong>"Integraciones"</strong> o <strong>"Conexiones"</strong>.</li>
+                                                    <li>Busca la sección <strong>"Cloud SQL"</strong>.</li>
+                                                    <li>Haz clic en <strong>"Añadir Conexión"</strong>.</li>
+                                                    <li>Selecciona tu instancia: <span className="font-mono bg-black/30 px-1 rounded">{sqlConfig.connectionName || 'tu-instancia'}</span></li>
+                                                    <li>Despliega nuevamente.</li>
+                                                </ol>
                                             </div>
 
                                             <div className="flex gap-2 border-b border-slate-700">
