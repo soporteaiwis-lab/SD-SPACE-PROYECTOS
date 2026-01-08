@@ -72,6 +72,7 @@ export const DatabaseView = () => {
   };
 
   const handleTestCloudConnection = async () => {
+      // 1. Validar que haya URL escrita
       if (!sqlConfig.proxyUrl) {
           alert("Debes configurar la URL de la Cloud Function (Middleware) primero.");
           setSqlTab('DEPLOY');
@@ -79,15 +80,25 @@ export const DatabaseView = () => {
       }
 
       setIsSqlConnecting(true);
-      addToConsole(`CLOUD SQL: Connecting to ${sqlConfig.connectionName} via Middleware...`);
+
+      // 2. AUTO-GUARDADO: Sincronizar estado de UI con el Servicio DB antes de probar
+      // Limpiamos espacios y slash final por si acaso
+      const cleanUrl = sqlConfig.proxyUrl.trim().replace(/\/$/, "");
+      const configToSync = { ...sqlConfig, proxyUrl: cleanUrl };
+      
+      setSqlConfig(configToSync); // Actualizar UI
+      db.saveCloudSqlConfig(configToSync); // Actualizar Servicio Interno (CRÍTICO)
+
+      addToConsole(`CLOUD SQL: Connecting to ${configToSync.connectionName} via Middleware...`);
+      addToConsole(`DEBUG: Target URL -> ${cleanUrl}`);
       
       try {
           await db.executeSql('SELECT 1');
           addToConsole(`CLOUD SQL: Handshake Successful.`);
-          addToConsole(`CLOUD SQL: Connected to ${sqlConfig.connectionName}`);
+          addToConsole(`CLOUD SQL: Connected to ${configToSync.connectionName}`);
           setStatusMsg('✅ Conexión Exitosa con Cloud SQL.');
           setSqlConfig(prev => ({ ...prev, isActive: true }));
-          db.saveCloudSqlConfig({ ...sqlConfig, isActive: true });
+          db.saveCloudSqlConfig({ ...configToSync, isActive: true });
       } catch (e: any) {
           addToConsole(`CLOUD SQL ERROR: ${e.message}`);
           alert("Error de Conexión: " + e.message);
