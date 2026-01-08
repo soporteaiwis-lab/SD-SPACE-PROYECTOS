@@ -448,11 +448,17 @@ exports.simpleDataProxy = async (req, res) => {
                                     <div className="bg-slate-900 p-6 rounded-xl border border-green-900/30 shadow-lg flex-1 flex flex-col">
                                         <div className="mb-4">
                                             <h3 className="text-xl font-bold text-white mb-2">Código del Agente (Cloud Function) v2.1</h3>
-                                            <p className="text-slate-400 text-xs leading-relaxed mb-4">
-                                                ATENCIÓN: Debes crear 2 archivos separados en Google Cloud Console. 
-                                                No pegues código Javascript en package.json.
-                                            </p>
                                             
+                                            {/* IMPORTANT WARNING BOX */}
+                                            <div className="bg-red-900/20 border border-red-500/50 p-4 rounded-lg mb-4 text-xs text-red-200">
+                                                <h4 className="font-bold flex items-center gap-2 mb-1"><Icon name="fa-exclamation-triangle" /> IMPORTANTE: CONFIGURACIÓN DE INICIO</h4>
+                                                <p>Al implementar en Google Cloud, debes cambiar el campo <strong>"Punto de entrada"</strong>.</p>
+                                                <p className="mt-2 font-mono bg-black/50 p-2 rounded text-green-400">
+                                                    Incorrecto: package.json<br/>
+                                                    Correcto: <strong>simpleDataProxy</strong>
+                                                </p>
+                                            </div>
+
                                             <div className="flex gap-2 border-b border-slate-700">
                                                 <button 
                                                     onClick={() => setDeployFileTab('INDEX')}
